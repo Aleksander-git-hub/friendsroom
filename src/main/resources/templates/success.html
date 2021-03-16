@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
@@ -11,24 +11,25 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
-    <title>Confirm your email</title>
+    <title>FriendsRoom</title>
 </head>
 
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Confirm your email</a>
+    <a class="navbar-brand" href="#">FriendsRoom</a>
 </nav>
 
 <div class="container">
     <div class="row py-2">
         <div class="col-12">
             <form>
-                <div>
-                    <p>
-                        <h5>Your email was confirmed</h5>
-                    </p>
-                </div>
+                <p>
+                    <h3>Registration successfully!</h3>
+                </p>
+                <p>
+                    <h5>Please, check you email box, and confirm your email</h5>
+                </p>
                 <div sec:authorize="isAnonymous()" class="form-inline my-2 my-lg-0">
                     <a class="btn btn-outline-success my-2 mr-2 my-sm-0" th:href="@{/login}">Login</a>
                 </div>
@@ -49,6 +50,6 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 
-
 </body>
+
 </html>

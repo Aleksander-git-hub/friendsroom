@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         String message = String.format(
                 "Hello, %s!\n" +
                         "Welcome to FriendsRoom! Please, visit next link: " +
-                        "http://localhost:8080/activate/%s",
+                        "http://localhost:8070/friends-room/activate/%s",
                 userEntity.getFirstName(),
                 userEntity.getActivationCode()
         );
@@ -90,18 +90,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean activateUser(String code) {
+    public void activateUser(String code) {
         UserEntity userEntity = userRepository.findByActivationCode(code);
-
-        if (userEntity == null) {
-            return false;
-        }
 
         userEntity.setActivationCode(null);
         userEntity.setStatus(Status.CONFIRMED);
 
         userRepository.save(userEntity);
-
-        return true;
     }
 }

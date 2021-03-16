@@ -19,5 +19,5 @@ public interface UserService {
 
     void deleteUserById(Long id);
 
-    boolean activateUser(String code);
+    void activateUser(String code);
 }
