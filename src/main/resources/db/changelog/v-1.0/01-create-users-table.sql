@@ -7,7 +7,7 @@ CREATE TABLE users(
     activation_code VARCHAR(255),
     created TIMESTAMP DEFAULT current_timestamp NOT NULL,
     updated TIMESTAMP DEFAULT current_timestamp NOT NULL,
-    status VARCHAR(20) DEFAULT 'ACTIVE' NOT NULL
+    status VARCHAR(20) DEFAULT 'NOT_CONFIRMED' NOT NULL
 );
 
 OK
