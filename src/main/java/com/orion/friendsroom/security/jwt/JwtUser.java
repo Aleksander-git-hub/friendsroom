@@ -1,11 +1,13 @@
 package com.orion.friendsroom.security.jwt;
 
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Date;
 
+@Getter
 public class JwtUser implements UserDetails {
 
     private final Long id;
@@ -80,17 +82,5 @@ public class JwtUser implements UserDetails {
 
     public Long getId() {
         return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getSecondName() {
-        return secondName;
-    }
-
-    public Date getLastPasswordResetDate() {
-        return lastPasswordResetDate;
     }
 }

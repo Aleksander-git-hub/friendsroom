@@ -1,13 +1,15 @@
 package com.orion.friendsroom.service;
 
-import com.orion.friendsroom.dto.UserRegistrationDto;
+import com.orion.friendsroom.dto.AuthenticationRequestDto;
+import com.orion.friendsroom.dto.UserRegisterDto;
 import com.orion.friendsroom.entity.UserEntity;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserEntity registerUser(UserRegistrationDto userRegistrationDto);
+    UserEntity registerUser(UserRegisterDto userRegistrationDto);
 
     UserEntity getUserById(Long id);
 
@@ -20,4 +22,6 @@ public interface UserService {
     void deleteUserById(Long id);
 
     void activateUser(String code);
+
+    ResponseEntity<?> validateUserLogin(AuthenticationRequestDto requestDto);
 }

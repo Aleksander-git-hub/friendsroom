@@ -2,7 +2,7 @@ package com.orion.friendsroom.entity;
 
 public enum Status {
     ACTIVE,
+    BANNED,
     DELETED,
-    CONFIRMED,
     NOT_CONFIRMED
 }

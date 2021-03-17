@@ -9,22 +9,11 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserRegistrationDto {
-
-    private Long id;
-
-    @NotBlank
-    private String firstName;
-
-    @NotBlank
-    private String secondName;
+public class AuthenticationRequestDto {
 
     @NotBlank
     private String email;
 
     @NotBlank
     private String password;
-
-    @NotBlank
-    private String repeatPassword;
 }

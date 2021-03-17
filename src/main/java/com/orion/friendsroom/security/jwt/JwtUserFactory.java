@@ -20,7 +20,7 @@ public class JwtUserFactory {
                 userEntity.getFirstName(),
                 userEntity.getSecondName(),
                 userEntity.getPassword(),
-                userEntity.getStatus().equals(Status.CONFIRMED),
+                userEntity.getStatus().equals(Status.ACTIVE),
                 userEntity.getUpdated(),
                 mapToGrantedAuthorities(userEntity.getRoles())
         );
