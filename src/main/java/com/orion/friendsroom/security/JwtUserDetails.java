@@ -1,4 +1,4 @@
-package com.orion.friendsroom.security.jwt;
+package com.orion.friendsroom.security;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 
 @Getter
-public class JwtUser implements UserDetails {
+public class JwtUserDetails implements UserDetails {
 
     private final Long id;
 
@@ -26,7 +26,7 @@ public class JwtUser implements UserDetails {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public JwtUser(
+    public JwtUserDetails(
             Long id,
             String email,
             String firstName,

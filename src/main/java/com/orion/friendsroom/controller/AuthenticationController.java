@@ -1,9 +1,9 @@
 package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
+import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +17,7 @@ public class AuthenticationController {
     private UserService userService;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDto requestDto) {
+    public AuthenticationResponseDto login(@RequestBody AuthenticationRequestDto requestDto) {
         return userService.validateUserLogin(requestDto);
     }
 }

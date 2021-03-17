@@ -1,16 +1,18 @@
 package com.orion.friendsroom.service.impl;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
+import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.UserRegisterDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.exceptions.JwtAuthenticationException;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.repository.RoleRepository;
 import com.orion.friendsroom.repository.UserRepository;
-import com.orion.friendsroom.security.jwt.JwtTokenProvider;
+import com.orion.friendsroom.security.JwtProvider;
 import com.orion.friendsroom.service.UserService;
 import com.orion.friendsroom.service.validation.UserAuthenticationValidator;
 import com.orion.friendsroom.service.validation.UserRegisterValidator;
@@ -46,10 +48,7 @@ public class UserServiceImpl implements UserService {
     private MailSender mailSender;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtProvider jwtProvider;
 
     @Transactional
     @Override
@@ -86,29 +85,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getUserById(Long id) {
-        return null;
-    }
+    public UserEntity findByEmailAndPassword(String email, String password) {
+        UserEntity userEntity = userRepository.findByEmail(email);
 
-    @Override
-    public List<UserEntity> getAllUsers() {
-        return null;
+        if (userEntity == null) {
+            throw new NotFoundException("User not found by email: " + email);
+        }
+
+        if (passwordEncoder.matches(password, userEntity.getPassword())) {
+            return userEntity;
+        } else {
+            throw new JwtAuthenticationException("Invalid password!");
+        }
     }
 
     @Override
     public UserEntity getUserByEmail(String email) {
-        return null;
+        UserEntity existingUser = userRepository.findByEmail(email);
+
+        if (existingUser != null) {
+            return existingUser;
+        } else {
+            throw new NotFoundException("User not found by email: " + email);
+        }
     }
 
-    @Override
-    public UserEntity updateUserById(UserEntity userEntity, Long id) {
-        return null;
-    }
-
-    @Override
-    public void deleteUserById(Long id) {
-
-    }
 
     @Override
     public void activateUser(String code) {
@@ -121,31 +122,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> validateUserLogin(AuthenticationRequestDto requestDto) {
+    public AuthenticationResponseDto validateUserLogin(AuthenticationRequestDto requestDto) {
         UserAuthenticationValidator.validateAuthenticationUser(requestDto);
 
-        try {
-            String email = requestDto.getEmail();
+        UserEntity userEntity = findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
 
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
-            UserEntity userEntity = userRepository.findByEmail(email);
+        UserAuthenticationValidator.validateStatusAuthUser(userEntity);
 
-            if (userEntity == null) {
-                throw new UsernameNotFoundException("User not found with email: " + email);
-            }
-
-            UserAuthenticationValidator.validateStatusAuthUser(userEntity);
-
-            String token = jwtTokenProvider.createToken(email, userEntity.getRoles());
-
-            Map<Object, Object> response = new HashMap<>();
-            response.put("email", email);
-            response.put("token", token);
-
-            return ResponseEntity.ok(response);
-        } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid email or password");
-        }
+        return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail()));
     }
 }

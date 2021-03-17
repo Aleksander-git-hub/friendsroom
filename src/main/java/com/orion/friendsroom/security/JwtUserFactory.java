@@ -1,4 +1,4 @@
-package com.orion.friendsroom.security.jwt;
+package com.orion.friendsroom.security;
 
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class JwtUserFactory {
 
-    public static JwtUser jwtUserFromUserEntity(UserEntity userEntity) {
-        return new JwtUser(
+    public static JwtUserDetails jwtUserFromUserEntity(UserEntity userEntity) {
+        return new JwtUserDetails(
                 userEntity.getId(),
                 userEntity.getEmail(),
                 userEntity.getFirstName(),
