@@ -1,10 +1,15 @@
 package com.orion.friendsroom.service.validation;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
+import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AuthenticationValidator {
 
@@ -25,6 +30,17 @@ public class AuthenticationValidator {
 
         if (userEntity.getStatus().equals(Status.BANNED)) {
             throw new NotFoundException("You are banned");
+        }
+    }
+
+    public static void validateRole(UserEntity entity) {
+
+        List<String> roles = entity.getRoles().stream()
+                .map(RoleEntity::getName)
+                .collect(Collectors.toList());
+
+        if (!roles.contains("ROLE_ADMIN")) {
+            throw new ForbiddenError("You do not have access right! Only for admins.");
         }
     }
 }

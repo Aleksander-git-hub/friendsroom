@@ -27,6 +27,14 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(ForbiddenError.class)
+    public ResponseEntity<?> handleForbiddenError
+            (NotFoundException exception, WebRequest request) {
+        ErrorDetails errorDetails =
+                new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
     public ResponseEntity<?> globalExceptionHandling
             (Exception exception, WebRequest request) {
         ErrorDetails errorDetails =

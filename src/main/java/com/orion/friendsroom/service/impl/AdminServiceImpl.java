@@ -90,6 +90,8 @@ public class AdminServiceImpl implements AdminService {
 
         UserEntity admin = userService.findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
 
+        AuthenticationValidator.validateRole(admin);
+
         AuthenticationValidator.validateStatusAuth(admin);
 
         return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail()));
