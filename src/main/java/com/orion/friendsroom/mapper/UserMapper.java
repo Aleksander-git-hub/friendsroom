@@ -1,7 +1,7 @@
 package com.orion.friendsroom.mapper;
 
-import com.orion.friendsroom.dto.UserRegisterDto;
-import com.orion.friendsroom.dto.UserSuccessRegisterDto;
+import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.UserSuccessRegisterDto;
 import com.orion.friendsroom.entity.UserEntity;
 import org.mapstruct.Mapper;
 
@@ -9,8 +9,6 @@ import org.mapstruct.Mapper;
 public interface UserMapper {
 
     UserEntity toEntity(UserRegisterDto userRegisterDto);
-
-    UserRegisterDto toRegister(UserEntity userEntity);
 
     UserSuccessRegisterDto toSuccessRegister(UserEntity userEntity);
 

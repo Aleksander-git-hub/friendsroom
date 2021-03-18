@@ -2,6 +2,7 @@ package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
+import com.orion.friendsroom.service.AdminService;
 import com.orion.friendsroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,16 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AdminService adminService;
+
     @PostMapping(value = "/login")
-    public AuthenticationResponseDto login(@RequestBody AuthenticationRequestDto requestDto) {
+    public AuthenticationResponseDto loginUser(@RequestBody AuthenticationRequestDto requestDto) {
         return userService.validateUserLogin(requestDto);
+    }
+
+    @PostMapping(value = "/admin/login")
+    public AuthenticationResponseDto loginAdmin(@RequestBody AuthenticationRequestDto requestDto) {
+        return adminService.validateAdminLogin(requestDto);
     }
 }

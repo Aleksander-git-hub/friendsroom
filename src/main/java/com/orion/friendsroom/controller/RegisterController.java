@@ -1,7 +1,7 @@
 package com.orion.friendsroom.controller;
 
-import com.orion.friendsroom.dto.UserRegisterDto;
-import com.orion.friendsroom.dto.UserSuccessRegisterDto;
+import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.UserSuccessRegisterDto;
 import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

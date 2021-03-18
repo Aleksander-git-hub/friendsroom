@@ -24,7 +24,7 @@ public class CustomExceptionHandler {
             (NotFoundException exception, WebRequest request) {
         ErrorDetails errorDetails =
                 new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
     public ResponseEntity<?> globalExceptionHandling

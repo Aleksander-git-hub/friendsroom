@@ -6,9 +6,9 @@ import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
-public class UserAuthenticationValidator {
+public class AuthenticationValidator {
 
-    public static void validateAuthenticationUser(AuthenticationRequestDto requestDto) {
+    public static void validateAuthentication(AuthenticationRequestDto requestDto) {
 
         if (StringUtils.isEmpty(requestDto.getEmail()) ||
             StringUtils.isEmpty(requestDto.getPassword())) {
@@ -16,7 +16,7 @@ public class UserAuthenticationValidator {
         }
     }
 
-    public static void validateStatusAuthUser(UserEntity userEntity) {
+    public static void validateStatusAuth(UserEntity userEntity) {
 
         if (userEntity.getStatus().equals(Status.DELETED) ||
             userEntity.getStatus().equals(Status.NOT_CONFIRMED)) {

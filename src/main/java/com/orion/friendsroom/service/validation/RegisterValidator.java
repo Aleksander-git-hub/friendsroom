@@ -1,12 +1,12 @@
 package com.orion.friendsroom.service.validation;
 
-import com.orion.friendsroom.dto.UserRegisterDto;
+import com.orion.friendsroom.dto.user.UserRegisterDto;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
-public class UserRegisterValidator {
+public class RegisterValidator {
 
-    public static void userRegisterValidator(UserRegisterDto userRegisterDto) {
+    public static void registerValidator(UserRegisterDto userRegisterDto) {
         if (StringUtils.isEmpty(userRegisterDto.getEmail()) ||
             StringUtils.isEmpty(userRegisterDto.getFirstName()) ||
             StringUtils.isEmpty(userRegisterDto.getSecondName()) ||
