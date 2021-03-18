@@ -92,7 +92,7 @@ public class AdminServiceImpl implements AdminService {
 
         AuthenticationValidator.validateStatusAuth(admin);
 
-        return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail(), admin.getRoles()));
+        return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail()));
     }
 
     @Override

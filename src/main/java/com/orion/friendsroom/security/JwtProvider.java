@@ -18,14 +18,12 @@ public class JwtProvider {
     @Value("${jwt.token.security}")
     private String secret;
 
-    public String generateToken(String email, List<RoleEntity> roles) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("roles", getRoleNames(roles));
-
+    public String generateToken(String email) {
         Date date = Date.from(LocalDate.now().plusDays(14).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         return Jwts.builder()
                 .setSubject(email)
+                .setIssuedAt(new Date())
                 .setExpiration(date)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();

@@ -119,6 +119,6 @@ public class UserServiceImpl implements UserService {
 
         AuthenticationValidator.validateStatusAuth(userEntity);
 
-        return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail(), userEntity.getRoles()));
+        return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail()));
     }
 }
