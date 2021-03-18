@@ -1,6 +1,6 @@
 package com.orion.friendsroom.controller;
 
-import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.RegisterDto;
 import com.orion.friendsroom.dto.user.UserSuccessRegisterDto;
 import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.service.UserService;
@@ -18,8 +18,8 @@ public class RegisterController {
     private UserMapper userMapper;
 
     @PostMapping(value = "/register")
-    public UserSuccessRegisterDto registerUser(@RequestBody UserRegisterDto userRegisterDto) {
-        return userMapper.toSuccessRegister(userService.registerUser(userRegisterDto));
+    public UserSuccessRegisterDto registerUser(@RequestBody RegisterDto registerDto) {
+        return userMapper.toSuccessRegister(userService.registerUser(registerDto));
     }
 
     @GetMapping(value = "/activate/{code}")

@@ -2,12 +2,12 @@ package com.orion.friendsroom.service;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
-import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.RegisterDto;
 import com.orion.friendsroom.entity.UserEntity;
 
 public interface UserService {
 
-    UserEntity registerUser(UserRegisterDto userRegistrationDto);
+    UserEntity registerUser(RegisterDto userRegistrationDto);
 
     UserEntity findByEmailAndPassword(String email, String password);
 

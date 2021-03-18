@@ -1,7 +1,7 @@
 package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.admin.AdminSuccessRegisterDto;
-import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.RegisterDto;
 import com.orion.friendsroom.mapper.AdminMapper;
 import com.orion.friendsroom.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ public class AdminController {
     private AdminMapper adminMapper;
 
     @PostMapping(value = "/register")
-    public AdminSuccessRegisterDto registerAdmin(@RequestBody UserRegisterDto adminRegisterDto) {
+    public AdminSuccessRegisterDto registerAdmin(@RequestBody RegisterDto adminRegisterDto) {
         return adminMapper.toSuccessRegister(adminService.registerAdmin(adminRegisterDto));
     }
 

@@ -32,15 +32,4 @@ public class AuthenticationValidator {
             throw new NotFoundException("You are banned");
         }
     }
-
-    public static void validateRole(UserEntity entity) {
-
-        List<String> roles = entity.getRoles().stream()
-                .map(RoleEntity::getName)
-                .collect(Collectors.toList());
-
-        if (!roles.contains("ROLE_ADMIN")) {
-            throw new ForbiddenError("You do not have access right! Only for admins.");
-        }
-    }
 }

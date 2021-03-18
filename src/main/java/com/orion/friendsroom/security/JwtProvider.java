@@ -1,5 +1,6 @@
 package com.orion.friendsroom.security;
 
+import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.exceptions.JwtAuthenticationException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,7 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtProvider {
@@ -15,7 +18,10 @@ public class JwtProvider {
     @Value("${jwt.token.security}")
     private String secret;
 
-    public String generateToken(String email) {
+    public String generateToken(String email, List<RoleEntity> roles) {
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("roles", getRoleNames(roles));
+
         Date date = Date.from(LocalDate.now().plusDays(14).atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         return Jwts.builder()
@@ -23,6 +29,16 @@ public class JwtProvider {
                 .setExpiration(date)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
+    }
+
+    private List<String> getRoleNames(List<RoleEntity> userRoles) {
+        List<String> result = new ArrayList<>();
+
+        userRoles.forEach(roleEntity -> {
+            result.add(roleEntity.getName());
+        });
+
+        return result;
     }
 
     public boolean validateToken(String token) {

@@ -2,7 +2,7 @@ package com.orion.friendsroom.service.impl;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
-import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.RegisterDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
@@ -49,7 +49,7 @@ public class AdminServiceImpl implements AdminService {
     private MailSender mailSender;
 
     @Override
-    public UserEntity registerAdmin(UserRegisterDto adminRegisterDto) {
+    public UserEntity registerAdmin(RegisterDto adminRegisterDto) {
         RegisterValidator.registerValidator(adminRegisterDto);
 
         UserEntity admin = userRepository.findByEmail(adminRegisterDto.getEmail());
@@ -90,11 +90,9 @@ public class AdminServiceImpl implements AdminService {
 
         UserEntity admin = userService.findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
 
-        AuthenticationValidator.validateRole(admin);
-
         AuthenticationValidator.validateStatusAuth(admin);
 
-        return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail()));
+        return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail(), admin.getRoles()));
     }
 
     @Override

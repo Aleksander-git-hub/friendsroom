@@ -2,7 +2,7 @@ package com.orion.friendsroom.service.impl;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
-import com.orion.friendsroom.dto.user.UserRegisterDto;
+import com.orion.friendsroom.dto.user.RegisterDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
@@ -45,14 +45,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserEntity registerUser(UserRegisterDto userRegisterDto) {
-        RegisterValidator.registerValidator(userRegisterDto);
-        UserEntity existingUser = userRepository.findByEmail(userRegisterDto.getEmail());
+    public UserEntity registerUser(RegisterDto registerDto) {
+        RegisterValidator.registerValidator(registerDto);
+        UserEntity existingUser = userRepository.findByEmail(registerDto.getEmail());
         RoleEntity roleUser = roleRepository.findByName("ROLE_USER");
 
         if (existingUser != null &&
             existingUser.getRoles().contains(roleUser)) {
-            throw new NotFoundException("User already registered with email: " + userRegisterDto.getEmail());
+            throw new NotFoundException("User already registered with email: " + registerDto.getEmail());
         }
 
         if (existingUser != null &&
@@ -64,12 +64,12 @@ public class UserServiceImpl implements UserService {
 
         List<RoleEntity> userRoles = new ArrayList<>();
 
-        userRegisterDto.setPassword(passwordEncoder.encode(userRegisterDto.getPassword()));
-        UserEntity userEntity = userMapper.toEntity(userRegisterDto);
+        registerDto.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        UserEntity userEntity = userMapper.toEntity(registerDto);
 
         AddNewEntity.addFields(userEntity, userRoles, roleUser);
         String message = AddNewEntity.getMessageForUser(userEntity);
-        mailSender.send(userRegisterDto.getEmail(), "Activation code", message);
+        mailSender.send(registerDto.getEmail(), "Activation code", message);
 
         return userRepository.save(userEntity);
     }
@@ -119,6 +119,6 @@ public class UserServiceImpl implements UserService {
 
         AuthenticationValidator.validateStatusAuth(userEntity);
 
-        return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail()));
+        return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail(), userEntity.getRoles()));
     }
 }
