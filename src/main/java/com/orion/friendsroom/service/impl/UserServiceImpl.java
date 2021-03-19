@@ -147,6 +147,9 @@ public class UserServiceImpl implements UserService {
 
         existingUser.setUpdated(new Date());
 
+        String message = AddNewEntity.getMessageForUpdateUser(existingUser);
+        mailSender.send(existingUser.getEmail(), "Updating", message);
+
         return userRepository.save(existingUser);
     }
 

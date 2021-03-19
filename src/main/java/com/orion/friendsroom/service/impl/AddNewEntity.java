@@ -38,4 +38,16 @@ public class AddNewEntity {
                 newAdmin.getActivationCode()
         );
     }
+
+    public static String getMessageForUpdateUser(UserEntity updatingUser) {
+        updatingUser.setActivationCode(UUID.randomUUID().toString());
+        updatingUser.setStatus(Status.NOT_CONFIRMED);
+        return String.format(
+                "Hello, %s!\n" +
+                        "Please, visit next link to confirm your update: " +
+                        "http://localhost:8070/friends-room/api/v1/activate/%s",
+                updatingUser.getFirstName(),
+                updatingUser.getActivationCode()
+        );
+    }
 }
