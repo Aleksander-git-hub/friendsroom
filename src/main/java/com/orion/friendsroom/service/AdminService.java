@@ -13,5 +13,5 @@ public interface AdminService {
 
     AuthenticationResponseDto validateAdminLogin(AuthenticationRequestDto requestDto);
 
-    void activateAdmin(String code);
+    //void activateAdmin(String code);
 }

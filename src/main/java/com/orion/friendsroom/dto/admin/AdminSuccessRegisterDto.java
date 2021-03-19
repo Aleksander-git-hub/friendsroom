@@ -16,5 +16,4 @@ public class AdminSuccessRegisterDto {
     private String secondName;
 
     private String email;
-
 }

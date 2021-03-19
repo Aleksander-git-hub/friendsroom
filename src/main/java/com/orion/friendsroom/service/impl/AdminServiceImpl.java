@@ -95,7 +95,7 @@ public class AdminServiceImpl implements AdminService {
         return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail()));
     }
 
-    @Override
+    /*@Override
     public void activateAdmin(String code) {
         UserEntity admin = userRepository.findByActivationCode(code);
 
@@ -103,5 +103,5 @@ public class AdminServiceImpl implements AdminService {
         admin.setStatus(Status.ACTIVE);
 
         userRepository.save(admin);
-    }
+    }*/
 }

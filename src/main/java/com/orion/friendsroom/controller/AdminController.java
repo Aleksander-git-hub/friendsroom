@@ -21,12 +21,4 @@ public class AdminController {
     public AdminSuccessRegisterDto registerAdmin(@RequestBody RegisterDto adminRegisterDto) {
         return adminMapper.toSuccessRegister(adminService.registerAdmin(adminRegisterDto));
     }
-
-    @GetMapping(value = "/activate/{code}")
-    public String activateEmail(@PathVariable String code) {
-        adminService.activateAdmin(code);
-
-        return "confirm";
-    }
-
 }

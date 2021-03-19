@@ -33,7 +33,7 @@ public class AddNewEntity {
         return String.format(
                 "Hello, %s!\n" +
                         "Welcome to our FriendsRoom team! You are an admin! Please, visit next link: " +
-                        "http://localhost:8070/friends-room/api/v1/admin/activate/%s",
+                        "http://localhost:8070/friends-room/api/v1/activate/%s",
                 newAdmin.getFirstName(),
                 newAdmin.getActivationCode()
         );
