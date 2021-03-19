@@ -1,7 +1,6 @@
 package com.orion.friendsroom.config;
 
 import com.orion.friendsroom.security.JwtFilter;
-import com.orion.friendsroom.security.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/register").permitAll()
                 .antMatchers("/api/v1/activate/**").permitAll()
                 .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/v1/user/**").hasRole("USER")
+                .antMatchers("/api/v1/auth/**").hasRole("USER")
                 .anyRequest().authenticated()
                 .and()
                 .logout()

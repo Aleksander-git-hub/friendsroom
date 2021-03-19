@@ -3,9 +3,8 @@ package com.orion.friendsroom.service;
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.admin.EmailUserForAdminDto;
-import com.orion.friendsroom.dto.admin.StatusUserForAdminDto;
-import com.orion.friendsroom.entity.Status;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.entity.UserEntity;
 
 import java.util.List;
@@ -14,7 +13,7 @@ public interface AdminService {
 
     UserEntity registerAdmin(RegisterDto adminRegisterDto);
 
-    UserEntity getUserByEmail(EmailUserForAdminDto email);
+    UserEntity getUserByEmail(EmailUserDto email);
 
     AuthenticationResponseDto validateAdminLogin(AuthenticationRequestDto requestDto);
 
@@ -26,10 +25,10 @@ public interface AdminService {
 
     List<UserEntity> getAllActiveUsers();
 
-    UserEntity changeStatusForUserById(StatusUserForAdminDto newStatus, Long userId);
+    UserEntity changeStatusForUserById(StatusDto newStatus, Long userId);
 
     void deleteUserById(Long userId);
 
-    void deleteUserByEmail(EmailUserForAdminDto email);
+    void deleteUserByEmail(EmailUserDto email);
 
 }

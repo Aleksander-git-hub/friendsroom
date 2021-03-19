@@ -7,13 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminSuccessRegisterDto {
-
-    private Long id;
-
-    private String firstName;
-
-    private String secondName;
+public class EmailUserDto {
 
     private String email;
 }

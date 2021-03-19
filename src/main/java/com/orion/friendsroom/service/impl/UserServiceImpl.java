@@ -3,6 +3,8 @@ package com.orion.friendsroom.service.impl;
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
@@ -13,14 +15,15 @@ import com.orion.friendsroom.repository.RoleRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.security.JwtProvider;
 import com.orion.friendsroom.service.UserService;
-import com.orion.friendsroom.service.validation.AuthenticationValidator;
-import com.orion.friendsroom.service.validation.RegisterValidator;
+import com.orion.friendsroom.service.validation.HandleValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -46,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserEntity registerUser(RegisterDto registerDto) {
-        RegisterValidator.registerValidator(registerDto);
+        HandleValidator.registerValidator(registerDto);
         UserEntity existingUser = userRepository.findByEmail(registerDto.getEmail());
         RoleEntity roleUser = roleRepository.findByName("ROLE_USER");
 
@@ -100,7 +103,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
+    @Transactional
     @Override
     public void activateUser(String code) {
         UserEntity userEntity = userRepository.findByActivationCode(code);
@@ -113,12 +116,38 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthenticationResponseDto validateUserLogin(AuthenticationRequestDto requestDto) {
-        AuthenticationValidator.validateAuthentication(requestDto);
+        HandleValidator.validateAuthentication(requestDto);
 
         UserEntity userEntity = findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
 
-        AuthenticationValidator.validateStatusAuth(userEntity);
+        HandleValidator.validateStatus(userEntity);
 
         return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail()));
     }
+
+    @Override
+    public UserEntity getUserByEmailForSearch(EmailUserDto emailDto) {
+        if (emailDto.getEmail() == null) {
+            throw new NotFoundException("Field for search is empty!");
+        }
+
+        return getUserByEmail(emailDto.getEmail());
+    }
+
+    @Transactional
+    @Override
+    public UserEntity updateUserByEmail(UserDto userForUpdate) {
+        HandleValidator.validateForUpdate(userForUpdate);
+
+        UserEntity existingUser = getUserByEmail(userForUpdate.getEmail());
+
+        HandleValidator.validateStatus(existingUser);
+
+        userMapper.updateUserEntityFromUserUpdateDto(userForUpdate, existingUser);
+
+        existingUser.setUpdated(new Date());
+
+        return userRepository.save(existingUser);
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.user.UserSuccessRegisterDto;
+import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +18,8 @@ public class RegisterController {
     private UserMapper userMapper;
 
     @PostMapping(value = "/register")
-    public UserSuccessRegisterDto registerUser(@RequestBody RegisterDto registerDto) {
-        return userMapper.toSuccessRegister(userService.registerUser(registerDto));
+    public UserDto registerUser(@RequestBody RegisterDto registerDto) {
+        return userMapper.toDto(userService.registerUser(registerDto));
     }
 
     @GetMapping(value = "/activate/{code}")

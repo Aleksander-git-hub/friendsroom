@@ -3,8 +3,8 @@ package com.orion.friendsroom.service.impl;
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.admin.EmailUserForAdminDto;
-import com.orion.friendsroom.dto.admin.StatusUserForAdminDto;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
@@ -16,11 +16,11 @@ import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.security.JwtProvider;
 import com.orion.friendsroom.service.AdminService;
 import com.orion.friendsroom.service.UserService;
-import com.orion.friendsroom.service.validation.AuthenticationValidator;
-import com.orion.friendsroom.service.validation.RegisterValidator;
+import com.orion.friendsroom.service.validation.HandleValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,9 +51,10 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private MailSender mailSender;
 
+    @Transactional
     @Override
     public UserEntity registerAdmin(RegisterDto adminRegisterDto) {
-        RegisterValidator.registerValidator(adminRegisterDto);
+        HandleValidator.registerValidator(adminRegisterDto);
 
         UserEntity admin = userRepository.findByEmail(adminRegisterDto.getEmail());
         RoleEntity roleAdmin = roleRepository.findByName("ROLE_ADMIN");
@@ -83,7 +84,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UserEntity getUserByEmail(EmailUserForAdminDto email) {
+    public UserEntity getUserByEmail(EmailUserDto email) {
         UserEntity existingUser = userRepository.findByEmail(email.getEmail());
 
         if (existingUser == null) {
@@ -95,11 +96,11 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public AuthenticationResponseDto validateAdminLogin(AuthenticationRequestDto requestDto) {
-        AuthenticationValidator.validateAuthentication(requestDto);
+        HandleValidator.validateAuthentication(requestDto);
 
         UserEntity admin = userService.findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
 
-        AuthenticationValidator.validateStatusAuth(admin);
+        HandleValidator.validateStatus(admin);
 
         return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail()));
     }
@@ -129,8 +130,9 @@ public class AdminServiceImpl implements AdminService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
-    public UserEntity changeStatusForUserById(StatusUserForAdminDto newStatus, Long userId) {
+    public UserEntity changeStatusForUserById(StatusDto newStatus, Long userId) {
         if (newStatus.getStatus() == null) {
             throw new NotFoundException("Can not resolve new status");
         }
@@ -155,6 +157,7 @@ public class AdminServiceImpl implements AdminService {
         return userRepository.save(existingUser);
     }
 
+    @Transactional
     @Override
     public void deleteUserById(Long userId) {
         UserEntity existingUser = getUserById(userId);
@@ -167,8 +170,9 @@ public class AdminServiceImpl implements AdminService {
         userRepository.save(existingUser);
     }
 
+    @Transactional
     @Override
-    public void deleteUserByEmail(EmailUserForAdminDto email) {
+    public void deleteUserByEmail(EmailUserDto email) {
         UserEntity existingUser = getUserByEmail(email);
 
         if (existingUser.getStatus().equals(Status.DELETED)) {

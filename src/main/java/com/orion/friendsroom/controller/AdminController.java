@@ -1,11 +1,10 @@
 package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.admin.AdminSuccessRegisterDto;
-import com.orion.friendsroom.dto.admin.EmailUserForAdminDto;
-import com.orion.friendsroom.dto.admin.StatusUserForAdminDto;
+import com.orion.friendsroom.dto.admin.AdminDto;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.dto.admin.UserForAdminDto;
-import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.mapper.AdminMapper;
 import com.orion.friendsroom.mapper.UserMapper;
@@ -31,7 +30,7 @@ public class AdminController {
     private UserMapper userMapper;
 
     @PostMapping(value = "/register")
-    public AdminSuccessRegisterDto registerAdmin(@RequestBody RegisterDto adminRegisterDto) {
+    public AdminDto registerAdmin(@RequestBody RegisterDto adminRegisterDto) {
         return adminMapper.toSuccessRegister(adminService.registerAdmin(adminRegisterDto));
     }
 
@@ -42,7 +41,7 @@ public class AdminController {
 
     @GetMapping(value = "/user/user-email")
     public UserForAdminDto getUserByEmail(
-            @RequestBody EmailUserForAdminDto email) {
+            @RequestBody EmailUserDto email) {
         return userMapper.toDtoForAdmin(adminService.getUserByEmail(email));
     }
 
@@ -71,7 +70,7 @@ public class AdminController {
     }
 
     @PutMapping(value = "/change-status/{id}")
-    public UserForAdminDto changeStatusForUserById(@RequestBody StatusUserForAdminDto status,
+    public UserForAdminDto changeStatusForUserById(@RequestBody StatusDto status,
                                                    @PathVariable Long id) {
         return userMapper.toDtoForAdmin(adminService.changeStatusForUserById(status, id));
     }
@@ -84,7 +83,7 @@ public class AdminController {
 
     @DeleteMapping(value = "/user/email")
     public ResponseEntity<?> deleteUserByEmail(
-            @RequestBody EmailUserForAdminDto email) {
+            @RequestBody EmailUserDto email) {
         adminService.deleteUserByEmail(email);
         return ResponseEntity.ok().build();
     }
