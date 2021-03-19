@@ -1,6 +1,6 @@
 package com.orion.friendsroom.controller;
 
-import com.orion.friendsroom.dto.user.RegisterDto;
+import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.user.UserSuccessRegisterDto;
 import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.service.UserService;

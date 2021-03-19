@@ -2,7 +2,7 @@ package com.orion.friendsroom.service.impl;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
-import com.orion.friendsroom.dto.user.RegisterDto;
+import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;

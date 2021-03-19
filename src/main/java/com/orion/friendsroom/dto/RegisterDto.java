@@ -1,4 +1,4 @@
-package com.orion.friendsroom.dto.user;
+package com.orion.friendsroom.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

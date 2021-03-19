@@ -1,6 +1,6 @@
 package com.orion.friendsroom.service.validation;
 
-import com.orion.friendsroom.dto.user.RegisterDto;
+import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
