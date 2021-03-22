@@ -19,4 +19,6 @@ public class RoomForAdminDto {
     private Date updated;
 
     private Status status;
+
+    private EmailUserDto owner;
 }

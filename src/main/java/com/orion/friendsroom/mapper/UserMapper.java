@@ -1,6 +1,7 @@
 package com.orion.friendsroom.mapper;
 
 import com.orion.friendsroom.dto.RegisterDto;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
 import com.orion.friendsroom.dto.admin.UserForAdminDto;
 import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.entity.UserEntity;
@@ -16,6 +17,8 @@ public interface UserMapper {
     UserDto toDto(UserEntity userEntity);
 
     UserForAdminDto toDtoForAdmin(UserEntity userEntity);
+
+    EmailUserDto toEmailUserDto(UserEntity userEntity);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "email", ignore = true)
