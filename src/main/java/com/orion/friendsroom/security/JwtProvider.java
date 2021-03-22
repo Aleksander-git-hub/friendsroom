@@ -29,16 +29,6 @@ public class JwtProvider {
                 .compact();
     }
 
-    private List<String> getRoleNames(List<RoleEntity> userRoles) {
-        List<String> result = new ArrayList<>();
-
-        userRoles.forEach(roleEntity -> {
-            result.add(roleEntity.getName());
-        });
-
-        return result;
-    }
-
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
