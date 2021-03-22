@@ -9,7 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@ToString
 @Entity
 @Table(name = "roles")
 public class RoleEntity extends BaseEntity {

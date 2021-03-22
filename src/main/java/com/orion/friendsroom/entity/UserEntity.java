@@ -9,7 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@ToString
 @Entity
 @Table(name = "users")
 public class UserEntity extends BaseEntity {
@@ -40,4 +39,18 @@ public class UserEntity extends BaseEntity {
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<RoleEntity> roles;
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", password='" + password + '\'' +
+                ", activationCode='" + activationCode + '\'' +
+                ", userRooms=" + userRooms +
+                ", rooms=" + rooms +
+                ", roles=" + roles +
+                '}';
+    }
 }

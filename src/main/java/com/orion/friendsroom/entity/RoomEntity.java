@@ -3,30 +3,21 @@ package com.orion.friendsroom.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "rooms")
-public class RoomEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class RoomEntity extends BaseEntity{
 
     @Column
     private String name;
 
-    @Column
-    private Date created;
-
-    @Column
-    private Date updated;
+    @Column(name = "activation_code")
+    private String activationCode;
 
     @ManyToOne
     private UserEntity owner;

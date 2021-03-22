@@ -16,8 +16,9 @@ import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.repository.RoleRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.security.JwtProvider;
+import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.UserService;
-import com.orion.friendsroom.service.validation.HandleValidator;
+import com.orion.friendsroom.service.validation.EntityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserEntity registerUser(RegisterDto registerDto) {
-        HandleValidator.registerValidator(registerDto);
+        EntityValidator.registerValidator(registerDto);
         UserEntity existingUser = userRepository.findByEmail(registerDto.getEmail());
         RoleEntity roleUser = roleRepository.findByName("ROLE_USER");
 
@@ -118,11 +119,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public AuthenticationResponseDto validateUserLogin(AuthenticationRequestDto requestDto) {
-        HandleValidator.validateAuthentication(requestDto);
+        EntityValidator.validateAuthentication(requestDto);
 
         UserEntity userEntity = findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
 
-        HandleValidator.validateStatus(userEntity);
+        EntityValidator.validateStatus(userEntity);
 
         return new AuthenticationResponseDto(jwtProvider.generateToken(userEntity.getEmail()));
     }
@@ -139,13 +140,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserEntity updateUserById(UserDto userForUpdate, Long id) {
-        HandleValidator.validateForUpdate(userForUpdate);
+        EntityValidator.validateForUpdate(userForUpdate);
 
         UserEntity existingUser = getUserByEmail(userForUpdate.getEmail());
 
-        HandleValidator.validateWhoseEmail(existingUser.getId(), id);
+        EntityValidator.validateWhoseEmail(existingUser.getId(), id);
 
-        HandleValidator.validateStatus(existingUser);
+        EntityValidator.validateStatus(existingUser);
 
         userMapper.updateUserEntityFromUserUpdateDto(userForUpdate, existingUser);
 
@@ -160,7 +161,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserEntity updateEmailOfUser(EmailDto emailDto, Long id) {
-        HandleValidator.validateForUpdateEmail(emailDto);
+        EntityValidator.validateForUpdateEmail(emailDto);
 
         if (userRepository.findByEmail(emailDto.getNewEmail()) != null) {
             throw new NotFoundException("User already exist with email: " +
@@ -169,8 +170,8 @@ public class UserServiceImpl implements UserService {
 
         UserEntity existingUser = getUserByEmail(emailDto.getOldEmail());
 
-        HandleValidator.validateWhoseEmail(existingUser.getId(), id);
-        HandleValidator.validateStatus(existingUser);
+        EntityValidator.validateWhoseEmail(existingUser.getId(), id);
+        EntityValidator.validateStatus(existingUser);
 
         existingUser.setEmail(emailDto.getNewEmail());
         existingUser.setUpdated(new Date());
@@ -183,13 +184,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity changePassword(PasswordDto passwordDto, Long id) {
-        HandleValidator.validateForPasswordChange(passwordDto);
+        EntityValidator.validateForPasswordChange(passwordDto);
 
         UserEntity existingUser = findByEmailAndPassword(passwordDto.getEmail(),
                 passwordDto.getOldPassword());
 
-        HandleValidator.validateWhoseEmail(existingUser.getId(), id);
-        HandleValidator.validateStatus(existingUser);
+        EntityValidator.validateWhoseEmail(existingUser.getId(), id);
+        EntityValidator.validateStatus(existingUser);
 
         existingUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
         existingUser.setUpdated(new Date());

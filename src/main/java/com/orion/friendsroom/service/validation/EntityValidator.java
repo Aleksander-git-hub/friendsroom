@@ -10,7 +10,7 @@ import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
-public class HandleValidator {
+public class EntityValidator {
     public static void validateAuthentication(AuthenticationRequestDto requestDto) {
 
         if (StringUtils.isEmpty(requestDto.getEmail()) ||

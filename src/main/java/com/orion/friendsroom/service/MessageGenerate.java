@@ -1,6 +1,7 @@
-package com.orion.friendsroom.service.impl;
+package com.orion.friendsroom.service;
 
 import com.orion.friendsroom.entity.RoleEntity;
+import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
 
@@ -18,7 +19,7 @@ public class MessageGenerate {
     }
 
     public static String getMessageForUser(UserEntity user) {
-        user.setActivationCode(UUID.randomUUID().toString());
+        user.setActivationCode(generateCode());
         user.setStatus(Status.NOT_CONFIRMED);
         return String.format(
                 "Hello, %s!\n" +
@@ -40,7 +41,7 @@ public class MessageGenerate {
     }
 
     public static String getMessageForUpdateUser(UserEntity updatingUser) {
-        updatingUser.setActivationCode(UUID.randomUUID().toString());
+        updatingUser.setActivationCode(generateCode());
         updatingUser.setStatus(Status.NOT_CONFIRMED);
         return String.format(
                 "Hello, %s!\n" +
@@ -49,5 +50,21 @@ public class MessageGenerate {
                 updatingUser.getFirstName(),
                 updatingUser.getActivationCode()
         );
+    }
+
+    public static String getMessageForRoom(RoomEntity room) {
+        room.setActivationCode(generateCode());
+        return String.format(
+                "Hello, %s!\n" +
+                        "Please, visit next link to confirm create room: %s\n " +
+                        "http://localhost:8070/friends-room/api/v1/activate/room/%s",
+                room.getOwner().getFirstName(),
+                room.getName(),
+                room.getActivationCode()
+        );
+    }
+
+    private static String generateCode() {
+        return UUID.randomUUID().toString();
     }
 }
