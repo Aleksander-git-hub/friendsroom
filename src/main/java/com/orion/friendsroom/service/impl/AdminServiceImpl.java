@@ -68,7 +68,7 @@ public class AdminServiceImpl implements AdminService {
                 admin.getRoles().contains(roleRepository.findByName("ROLE_USER"))) {
             admin.setUpdated(new Date());
             admin.getRoles().add(roleAdmin);
-            AddNewEntity.getMessageForAdmin(admin);
+            MessageGenerate.getMessageForAdmin(admin);
         }
 
         List<RoleEntity> adminRoles = new ArrayList<>();
@@ -76,8 +76,8 @@ public class AdminServiceImpl implements AdminService {
         adminRegisterDto.setPassword(passwordEncoder.encode(adminRegisterDto.getPassword()));
         UserEntity newAdmin = userMapper.toEntity(adminRegisterDto);
 
-        AddNewEntity.addFields(newAdmin, adminRoles, roleAdmin);
-        String message = AddNewEntity.getMessageForAdmin(newAdmin);
+        MessageGenerate.addFields(newAdmin, adminRoles, roleAdmin);
+        String message = MessageGenerate.getMessageForAdmin(newAdmin);
         mailSender.send(adminRegisterDto.getEmail(), "Activation code", message);
 
         return userRepository.save(newAdmin);

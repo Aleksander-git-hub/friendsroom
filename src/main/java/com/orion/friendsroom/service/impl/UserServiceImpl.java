@@ -4,7 +4,9 @@ import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserDto;
+import com.orion.friendsroom.dto.user.EmailDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.Status;
@@ -70,8 +72,8 @@ public class UserServiceImpl implements UserService {
         registerDto.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         UserEntity userEntity = userMapper.toEntity(registerDto);
 
-        AddNewEntity.addFields(userEntity, userRoles, roleUser);
-        String message = AddNewEntity.getMessageForUser(userEntity);
+        MessageGenerate.addFields(userEntity, userRoles, roleUser);
+        String message = MessageGenerate.getMessageForUser(userEntity);
         mailSender.send(registerDto.getEmail(), "Activation code", message);
 
         return userRepository.save(userEntity);
@@ -136,10 +138,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserEntity updateUserByEmail(UserDto userForUpdate) {
+    public UserEntity updateUserById(UserDto userForUpdate, Long id) {
         HandleValidator.validateForUpdate(userForUpdate);
 
         UserEntity existingUser = getUserByEmail(userForUpdate.getEmail());
+
+        HandleValidator.validateWhoseEmail(existingUser.getId(), id);
 
         HandleValidator.validateStatus(existingUser);
 
@@ -147,8 +151,50 @@ public class UserServiceImpl implements UserService {
 
         existingUser.setUpdated(new Date());
 
-        String message = AddNewEntity.getMessageForUpdateUser(existingUser);
+        String message = MessageGenerate.getMessageForUpdateUser(existingUser);
         mailSender.send(existingUser.getEmail(), "Updating", message);
+
+        return userRepository.save(existingUser);
+    }
+
+    @Transactional
+    @Override
+    public UserEntity updateEmailOfUser(EmailDto emailDto, Long id) {
+        HandleValidator.validateForUpdateEmail(emailDto);
+
+        if (userRepository.findByEmail(emailDto.getNewEmail()) != null) {
+            throw new NotFoundException("User already exist with email: " +
+                    emailDto.getNewEmail());
+        }
+
+        UserEntity existingUser = getUserByEmail(emailDto.getOldEmail());
+
+        HandleValidator.validateWhoseEmail(existingUser.getId(), id);
+        HandleValidator.validateStatus(existingUser);
+
+        existingUser.setEmail(emailDto.getNewEmail());
+        existingUser.setUpdated(new Date());
+
+        String message = MessageGenerate.getMessageForUser(existingUser);
+        mailSender.send(existingUser.getEmail(), "Email updating", message);
+
+        return userRepository.save(existingUser);
+    }
+
+    @Override
+    public UserEntity changePassword(PasswordDto passwordDto, Long id) {
+        HandleValidator.validateForPasswordChange(passwordDto);
+
+        UserEntity existingUser = findByEmailAndPassword(passwordDto.getEmail(),
+                passwordDto.getOldPassword());
+
+        HandleValidator.validateWhoseEmail(existingUser.getId(), id);
+        HandleValidator.validateStatus(existingUser);
+
+        existingUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+
+        String message = MessageGenerate.getMessageForUpdateUser(existingUser);
+        mailSender.send(passwordDto.getEmail(), "Password update", message);
 
         return userRepository.save(existingUser);
     }

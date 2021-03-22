@@ -1,6 +1,5 @@
 package com.orion.friendsroom.security;
 
-import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.exceptions.JwtAuthenticationException;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,9 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Component
 public class JwtProvider {

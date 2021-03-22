@@ -2,7 +2,9 @@ package com.orion.friendsroom.service.validation;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.RegisterDto;
+import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserDto;
+import com.orion.friendsroom.dto.user.EmailDto;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.NotFoundException;
@@ -38,13 +40,7 @@ public class HandleValidator {
             throw new NotFoundException("Some fields are empty! Please, check this!");
         }
 
-        if (registerDto.getPassword().length() < 6) {
-            throw new NotFoundException("Password must have more than 5 chars");
-        }
-
-        if (!registerDto.getPassword().equals(registerDto.getRepeatPassword())) {
-            throw new NotFoundException("Passwords mismatch!");
-        }
+        validatePasswordsFields(registerDto.getPassword(), registerDto.getRepeatPassword());
     }
 
     public static void validateForUpdate(UserDto userForUpdate) {
@@ -52,6 +48,41 @@ public class HandleValidator {
             StringUtils.isEmpty(userForUpdate.getFirstName()) ||
             StringUtils.isEmpty(userForUpdate.getSecondName())) {
             throw new NotFoundException("Some fields are empty! Please, check this!");
+        }
+    }
+
+    public static void validateForUpdateEmail(EmailDto emailDto) {
+        if (StringUtils.isEmpty(emailDto.getOldEmail()) ||
+            StringUtils.isEmpty(emailDto.getNewEmail())) {
+            throw new NotFoundException("Some fields are empty! Please, check this!");
+        }
+    }
+
+    public static void validateForPasswordChange(PasswordDto passwordDto) {
+        if (StringUtils.isEmpty(passwordDto.getEmail()) ||
+            StringUtils.isEmpty(passwordDto.getOldPassword()) ||
+            StringUtils.isEmpty(passwordDto.getNewPassword()) ||
+            StringUtils.isEmpty(passwordDto.getRepeatNewPassword())) {
+            throw new NotFoundException("Some fields are empty! Please, check this!");
+        }
+
+        validatePasswordsFields(passwordDto.getNewPassword(),
+                passwordDto.getRepeatNewPassword());
+    }
+
+    private static void validatePasswordsFields(String first, String second) {
+        if (first.length() < 6) {
+            throw new NotFoundException("Password must have more than 5 chars");
+        }
+
+        if (!first.equals(second)) {
+            throw new NotFoundException("Passwords mismatch!");
+        }
+    }
+
+    public static void validateWhoseEmail(Long existingId, Long comeId) {
+        if (!existingId.equals(comeId)) {
+            throw new NotFoundException("This email is not yours!!! Please, enter your email.");
         }
     }
 }

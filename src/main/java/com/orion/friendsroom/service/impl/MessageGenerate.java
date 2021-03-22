@@ -8,18 +8,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class AddNewEntity {
+public class MessageGenerate {
 
     public static void addFields(UserEntity entity, List<RoleEntity> roles, RoleEntity role) {
         roles.add(role);
         entity.setCreated(new Date());
         entity.setUpdated(entity.getCreated());
         entity.setRoles(roles);
-        entity.setStatus(Status.NOT_CONFIRMED);
-        entity.setActivationCode(UUID.randomUUID().toString());
     }
 
     public static String getMessageForUser(UserEntity user) {
+        user.setActivationCode(UUID.randomUUID().toString());
+        user.setStatus(Status.NOT_CONFIRMED);
         return String.format(
                 "Hello, %s!\n" +
                         "Welcome to FriendsRoom! Please, visit next link: " +
