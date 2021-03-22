@@ -3,6 +3,7 @@ package com.orion.friendsroom.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -20,6 +21,12 @@ public class RoomEntity {
 
     @Column
     private String name;
+
+    @Column
+    private Date created;
+
+    @Column
+    private Date updated;
 
     @ManyToOne
     private UserEntity owner;

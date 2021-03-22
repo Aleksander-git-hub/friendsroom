@@ -192,6 +192,7 @@ public class UserServiceImpl implements UserService {
         HandleValidator.validateStatus(existingUser);
 
         existingUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        existingUser.setUpdated(new Date());
 
         String message = MessageGenerate.getMessageForUpdateUser(existingUser);
         mailSender.send(passwordDto.getEmail(), "Password update", message);
