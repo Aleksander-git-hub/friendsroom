@@ -83,7 +83,7 @@ public class AdminServiceImpl implements AdminService {
         adminRegisterDto.setPassword(passwordEncoder.encode(adminRegisterDto.getPassword()));
         UserEntity newAdmin = userMapper.toEntity(adminRegisterDto);
 
-        MessageGenerate.addFields(newAdmin, adminRoles, roleAdmin);
+        MessageGenerate.setFields(newAdmin, adminRoles, roleAdmin);
         String message = MessageGenerate.getMessageForAdmin(newAdmin);
         mailSender.send(adminRegisterDto.getEmail(), "Activation code", message);
 

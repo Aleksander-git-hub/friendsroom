@@ -11,21 +11,22 @@ import java.util.UUID;
 
 public class MessageGenerate {
 
-    public static void addFields(UserEntity entity, List<RoleEntity> roles, RoleEntity role) {
+    public static void setFields(UserEntity entity, List<RoleEntity> roles, RoleEntity role) {
         roles.add(role);
         entity.setCreated(new Date());
         entity.setUpdated(entity.getCreated());
         entity.setRoles(roles);
+        entity.setActivationCode(generateCode());
+        entity.setStatus(Status.NOT_CONFIRMED);
     }
 
     public static String getMessageForUser(UserEntity user) {
-        user.setActivationCode(generateCode());
-        user.setStatus(Status.NOT_CONFIRMED);
         return String.format(
                 "Hello, %s!\n" +
-                        "Welcome to FriendsRoom! Please, visit next link: " +
+                        "Welcome to FriendsRoom! Your ID: %s. Please, visit next link:\n " +
                         "http://localhost:8070/friends-room/api/v1/activate/%s",
                 user.getFirstName(),
+                user.getId(),
                 user.getActivationCode()
         );
     }

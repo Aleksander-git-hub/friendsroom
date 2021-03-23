@@ -73,11 +73,11 @@ public class UserServiceImpl implements UserService {
         registerDto.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         UserEntity userEntity = userMapper.toEntity(registerDto);
 
-        MessageGenerate.addFields(userEntity, userRoles, roleUser);
+        MessageGenerate.setFields(userEntity, userRoles, roleUser);
+        userRepository.save(userEntity);
+
         String message = MessageGenerate.getMessageForUser(userEntity);
         mailSender.send(registerDto.getEmail(), "Activation code", message);
-
-        userRepository.save(userEntity);
 
         return userEntity;
     }
