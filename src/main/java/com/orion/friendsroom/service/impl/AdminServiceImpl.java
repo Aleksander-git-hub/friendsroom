@@ -272,7 +272,10 @@ public class AdminServiceImpl implements AdminService {
             throw new NotFoundException("User with email: " + emailUserDto.getEmail() + " do not have rooms");
         }
 
-        rooms.forEach(roomEntity -> roomEntity.setStatus(Status.DELETED));
-        rooms.forEach(roomEntity -> roomEntity.setUpdated(new Date()));
+        rooms.forEach(roomEntity -> {
+            roomEntity.setStatus(Status.DELETED);
+            roomEntity.setUpdated(new Date());
+            roomRepository.save(roomEntity);
+        });
     }
 }

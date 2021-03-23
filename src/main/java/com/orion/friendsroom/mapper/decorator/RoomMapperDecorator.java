@@ -17,6 +17,7 @@ public abstract class RoomMapperDecorator implements RoomMapper {
     @Override
     public RoomForAdminDto toAdminDto(RoomEntity roomEntity) {
         RoomForAdminDto room = delegate.toAdminDto(roomEntity);
+        room.setId(roomEntity.getId());
         room.setOwner(userMapper.toEmailUserDto(roomEntity.getOwner()));
         return room;
     }

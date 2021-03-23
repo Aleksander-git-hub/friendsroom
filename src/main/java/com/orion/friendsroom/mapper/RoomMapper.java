@@ -4,6 +4,7 @@ import com.orion.friendsroom.dto.admin.RoomForAdminDto;
 import com.orion.friendsroom.dto.room.RoomDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface RoomMapper {
