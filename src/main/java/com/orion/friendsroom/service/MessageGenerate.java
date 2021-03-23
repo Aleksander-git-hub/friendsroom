@@ -64,6 +64,19 @@ public class MessageGenerate {
         );
     }
 
+    public static String getMessageForUpdateRoom(RoomEntity updatingRoom) {
+        updatingRoom.setActivationCode(generateCode());
+        updatingRoom.setStatus(Status.NOT_CONFIRMED);
+        return String.format(
+                "Hello, %s!\n" +
+                        "Please, visit next link for confirm updating Room: %s:\n " +
+                        "http://localhost:8070/friends-room/api/v1/activate/%s",
+                updatingRoom.getOwner().getFirstName(),
+                updatingRoom.getName(),
+                updatingRoom.getActivationCode()
+        );
+    }
+
     private static String generateCode() {
         return UUID.randomUUID().toString();
     }

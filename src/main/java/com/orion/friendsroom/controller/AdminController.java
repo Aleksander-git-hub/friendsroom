@@ -2,6 +2,7 @@ package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.admin.*;
+import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.mapper.AdminMapper;

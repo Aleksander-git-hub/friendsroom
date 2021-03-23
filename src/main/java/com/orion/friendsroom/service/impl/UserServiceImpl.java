@@ -77,7 +77,9 @@ public class UserServiceImpl implements UserService {
         String message = MessageGenerate.getMessageForUser(userEntity);
         mailSender.send(registerDto.getEmail(), "Activation code", message);
 
-        return userRepository.save(userEntity);
+        userRepository.save(userEntity);
+
+        return userEntity;
     }
 
     @Override

@@ -29,7 +29,7 @@ public class EntityValidator {
         }
 
         if (userEntity.getStatus().equals(Status.BANNED)) {
-            throw new NotFoundException("You are banned");
+            throw new NotFoundException("User is banned");
         }
     }
 

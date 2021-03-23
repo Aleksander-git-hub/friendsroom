@@ -5,6 +5,7 @@ import com.orion.friendsroom.dto.room.RoomDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface RoomMapper {
@@ -14,4 +15,8 @@ public interface RoomMapper {
     RoomDto toDto(RoomEntity roomEntity);
 
     RoomForAdminDto toAdminDto(RoomEntity roomEntity);
+
+    @Mapping(target = "id", ignore = true)
+    void updateRoomEntityFromRoomDto(RoomDto source,
+                                     @MappingTarget RoomEntity target);
 }
