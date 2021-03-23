@@ -2,9 +2,11 @@ package com.orion.friendsroom.service.validation;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.RegisterDto;
+import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.dto.user.EmailDto;
+import com.orion.friendsroom.entity.BaseEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.NotFoundException;
@@ -83,6 +85,24 @@ public class EntityValidator {
     public static void validateWhoseEmail(Long existingId, Long comeId) {
         if (!existingId.equals(comeId)) {
             throw new NotFoundException("This email is not yours!!! Please, enter your email.");
+        }
+    }
+
+    public static void validateStatusField(StatusDto status, BaseEntity entity) {
+        if (status.getStatus() == null) {
+            throw new NotFoundException("Can not resolve new status");
+        }
+
+        if (status.getStatus().equals(Status.DELETED)) {
+            throw new NotFoundException("Can not execute here!");
+        }
+
+        if (status.getStatus().equals(entity.getStatus())) {
+            throw new NotFoundException(String.format(
+                    "Entity with id: %s already has status: %s",
+                    entity.getId(),
+                    status.getStatus()
+            ));
         }
     }
 }

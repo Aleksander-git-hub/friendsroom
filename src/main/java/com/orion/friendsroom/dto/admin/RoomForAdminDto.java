@@ -12,6 +12,8 @@ import java.util.Date;
 @NoArgsConstructor
 public class RoomForAdminDto {
 
+    private Long id;
+
     private String name;
 
     private Date created;

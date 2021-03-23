@@ -4,6 +4,8 @@ import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.admin.RoomForAdminDto;
+import com.orion.friendsroom.dto.admin.RoomNameDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
@@ -33,4 +35,20 @@ public interface AdminService {
     void deleteUserByEmail(EmailUserDto email);
 
     List<RoomEntity> getRoomsByOwner(EmailUserDto emailUserDto);
+
+    List<RoomEntity> getAllRooms();
+
+    RoomEntity getRoomById(Long id);
+
+    List<RoomEntity> getAllBannedRooms();
+
+    List<RoomEntity> getAllActiveRooms();
+
+    RoomEntity changeStatusForRoomById(StatusDto status, Long roomId);
+
+    void deleteRoomById(Long roomId);
+
+    void deleteRoomByName(RoomNameDto roomNameDto);
+
+    void deleteRoomsByOwner(EmailUserDto emailUserDto);
 }

@@ -90,11 +90,64 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/rooms")
+    @GetMapping(value = "/rooms-by-owner")
     public List<RoomForAdminDto> getRoomsByOwner(@RequestBody EmailUserDto emailUserDto) {
         List<RoomEntity> rooms = adminService.getRoomsByOwner(emailUserDto);
         return rooms.stream()
                 .map(roomMapper::toAdminDto)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/rooms")
+    public List<RoomForAdminDto> getAllRooms() {
+        List<RoomEntity> rooms = adminService.getAllRooms();
+        return rooms.stream()
+                .map(roomMapper::toAdminDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/room/{id}")
+    public RoomForAdminDto getRoomById(@PathVariable Long id) {
+        return roomMapper.toAdminDto(adminService.getRoomById(id));
+    }
+
+    @GetMapping(value = "/all-banned-rooms")
+    public List<RoomForAdminDto> getAllBannedRoom() {
+        List<RoomEntity> bannedRooms = adminService.getAllBannedRooms();
+        return bannedRooms.stream()
+                .map(roomMapper::toAdminDto)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/all-active-rooms")
+    public List<RoomForAdminDto> getAllActiveRoom() {
+        List<RoomEntity> activeRooms = adminService.getAllActiveRooms();
+        return activeRooms.stream()
+                .map(roomMapper::toAdminDto)
+                .collect(Collectors.toList());
+    }
+
+    @PutMapping(value = "/room-change-status/{id}")
+    public RoomForAdminDto changeStatusForRoomById(@RequestBody StatusDto status,
+                                                   @PathVariable Long id) {
+        return roomMapper.toAdminDto(adminService.changeStatusForRoomById(status, id));
+    }
+
+    @DeleteMapping(value = "/room/{id}")
+    public ResponseEntity<?> deleteRoomById(@PathVariable Long id) {
+        adminService.deleteRoomById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/room/name")
+    public ResponseEntity<?> deleteRoomByName(@RequestBody RoomNameDto roomNameDto) {
+        adminService.deleteRoomByName(roomNameDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/rooms/owner")
+    public ResponseEntity<?> deleteRoomsByOwner(@RequestBody EmailUserDto emailUserDto) {
+        adminService.deleteRoomsByOwner(emailUserDto);
+        return ResponseEntity.ok().build();
     }
 }

@@ -4,6 +4,8 @@ import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.admin.RoomForAdminDto;
+import com.orion.friendsroom.dto.admin.RoomNameDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
@@ -13,12 +15,14 @@ import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.repository.RoleRepository;
+import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.security.JwtProvider;
 import com.orion.friendsroom.service.AdminService;
 import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.UserService;
 import com.orion.friendsroom.service.validation.EntityValidator;
+import com.orion.friendsroom.service.validation.RoomValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,6 +56,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private MailSender mailSender;
+
+    @Autowired
+    private RoomRepository roomRepository;
 
     @Transactional
     @Override
@@ -135,23 +142,9 @@ public class AdminServiceImpl implements AdminService {
     @Transactional
     @Override
     public UserEntity changeStatusForUserById(StatusDto newStatus, Long userId) {
-        if (newStatus.getStatus() == null) {
-            throw new NotFoundException("Can not resolve new status");
-        }
-
-        if (newStatus.getStatus().equals(Status.DELETED)) {
-            throw new NotFoundException("Can not execute here!");
-        }
-
         UserEntity existingUser = getUserById(userId);
 
-        if (newStatus.getStatus().equals(existingUser.getStatus())) {
-            throw new NotFoundException(String.format(
-               "User with id: %s already has status: %s",
-               userId,
-               newStatus.getStatus()
-            ));
-        }
+        EntityValidator.validateStatusField(newStatus, existingUser);
 
         existingUser.setStatus(newStatus.getStatus());
         existingUser.setUpdated(new Date());
@@ -169,6 +162,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         existingUser.setStatus(Status.DELETED);
+        existingUser.setUpdated(new Date());
         userRepository.save(existingUser);
     }
 
@@ -182,6 +176,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         existingUser.setStatus(Status.DELETED);
+        existingUser.setUpdated(new Date());
         userRepository.save(existingUser);
     }
 
@@ -190,5 +185,94 @@ public class AdminServiceImpl implements AdminService {
         UserEntity existingUser = getUserByEmail(emailUserDto);
 
         return existingUser.getUserRooms();
+    }
+
+    @Override
+    public List<RoomEntity> getAllRooms() {
+        return roomRepository.findAll();
+    }
+
+    @Override
+    public RoomEntity getRoomById(Long id) {
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Room not found by id: " + id));
+    }
+
+    @Override
+    public List<RoomEntity> getAllBannedRooms() {
+        return roomRepository.findAll().stream()
+                .filter(room -> room.getStatus().equals(Status.BANNED))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RoomEntity> getAllActiveRooms() {
+        return roomRepository.findAll().stream()
+                .filter(room -> room.getStatus().equals(Status.ACTIVE))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public RoomEntity changeStatusForRoomById(StatusDto status, Long roomId) {
+        RoomEntity existingRoom = getRoomById(roomId);
+
+        EntityValidator.validateStatusField(status, existingRoom);
+
+        existingRoom.setStatus(status.getStatus());
+        existingRoom.setUpdated(new Date());
+
+        return roomRepository.save(existingRoom);
+    }
+
+    @Transactional
+    @Override
+    public void deleteRoomById(Long roomId) {
+        RoomEntity existingRoom = getRoomById(roomId);
+
+        if (existingRoom.getStatus().equals(Status.DELETED)) {
+            throw new NotFoundException("Room is deleted already for id: " + roomId);
+        }
+
+        existingRoom.setStatus(Status.DELETED);
+        existingRoom.setUpdated(new Date());
+        roomRepository.save(existingRoom);
+    }
+
+    @Transactional
+    @Override
+    public void deleteRoomByName(RoomNameDto roomNameDto) {
+        RoomEntity existingRoom = roomRepository.findByName(roomNameDto.getName());
+
+        if (existingRoom == null) {
+            throw new NotFoundException("Room not found by name: " + roomNameDto.getName());
+        }
+
+        if (existingRoom.getStatus().equals(Status.DELETED)) {
+            throw new NotFoundException("Room is deleted already for name: " + roomNameDto.getName());
+        }
+
+        existingRoom.setStatus(Status.DELETED);
+        existingRoom.setUpdated(new Date());
+
+        roomRepository.save(existingRoom);
+    }
+
+    @Override
+    public void deleteRoomsByOwner(EmailUserDto emailUserDto) {
+        UserEntity existingUser = userRepository.findByEmail(emailUserDto.getEmail());
+
+        if (existingUser == null) {
+            throw new NotFoundException("User not found by email: " + emailUserDto.getEmail());
+        }
+
+        List<RoomEntity> rooms = roomRepository.findByOwner(existingUser);
+
+        if (rooms.size() == 0) {
+            throw new NotFoundException("User with email: " + emailUserDto.getEmail() + " do not have rooms");
+        }
+
+        rooms.forEach(roomEntity -> roomEntity.setStatus(Status.DELETED));
+        rooms.forEach(roomEntity -> roomEntity.setUpdated(new Date()));
     }
 }
