@@ -1,6 +1,6 @@
 package com.orion.friendsroom.dto.room;
 
-import com.orion.friendsroom.dto.user.UserDto;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +16,5 @@ public class RoomDto {
     private String name;
 
     @NotBlank
-    private UserDto owner;
+    private EmailUserDto owner;
 }

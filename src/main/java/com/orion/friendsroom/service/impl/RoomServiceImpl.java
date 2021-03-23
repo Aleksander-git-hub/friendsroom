@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,15 +61,19 @@ public class RoomServiceImpl implements RoomService {
         creationRoom.setUpdated(creationRoom.getCreated());
         creationRoom.setStatus(Status.NOT_CONFIRMED);
         creationRoom.setOwner(existingUser);
+        creationRoom.setActivationCode(UUID.randomUUID().toString());
+        roomRepository.save(creationRoom);
 
         existingUser.getUserRooms().add(creationRoom);
+        userRepository.save(existingUser);
 
         String message = MessageGenerate.getMessageForRoom(creationRoom);
         mailSender.send(existingUser.getEmail(), "Creating Room", message);
 
-        return roomRepository.save(creationRoom);
+        return creationRoom;
     }
 
+    @Transactional
     @Override
     public void activateRoom(String code) {
         RoomEntity roomEntity = roomRepository.findByActivationCode(code);
@@ -107,13 +112,6 @@ public class RoomServiceImpl implements RoomService {
         return existingRoom;
     }
 
-    @Override
-    public List<UserEntity> getGuestsOfRoom(Long roomId) {
-        RoomEntity existingRoom = getRoomById(roomId);
-
-        return existingRoom.getUsers();
-    }
-
     @Transactional
     @Override
     public void addGuestToRoom(EmailUserDto emailUserDto, Long roomId) {
@@ -138,7 +136,19 @@ public class RoomServiceImpl implements RoomService {
 
         existingRoom.getUsers().add(existingUser);
         existingRoom.setUpdated(new Date());
+
+        existingUser.getRooms().add(existingRoom);
+        existingUser.setUpdated(new Date());
+        userRepository.save(existingUser);
+
         roomRepository.save(existingRoom);
+    }
+
+    @Override
+    public List<UserEntity> getGuestsOfRoom(Long roomId) {
+        RoomEntity existingRoom = getRoomById(roomId);
+
+        return existingRoom.getUsers();
     }
 
     @Transactional

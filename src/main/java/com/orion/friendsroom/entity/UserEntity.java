@@ -31,7 +31,10 @@ public class UserEntity extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
     private List<RoomEntity> userRooms;
 
-    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_rooms",
+        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+        inverseJoinColumns = {@JoinColumn(name = "room_id", referencedColumnName = "id")})
     private List<RoomEntity> rooms;
 
     @ManyToMany(fetch = FetchType.EAGER)

@@ -9,9 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 public class RoomValidator {
     public static void validateRoom(RoomDto creationRoom) {
         if (StringUtils.isEmpty(creationRoom.getName()) ||
-            StringUtils.isEmpty(creationRoom.getOwner().getEmail()) ||
-            StringUtils.isEmpty(creationRoom.getOwner().getFirstName()) ||
-            StringUtils.isEmpty(creationRoom.getOwner().getSecondName())) {
+            StringUtils.isEmpty(creationRoom.getOwner().getEmail())) {
             throw new NotFoundException("Some fields are empty! Please, check this!");
         }
     }

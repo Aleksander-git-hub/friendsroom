@@ -22,9 +22,6 @@ public class RoomEntity extends BaseEntity{
     @ManyToOne
     private UserEntity owner;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "user_rooms",
-        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-        inverseJoinColumns = {@JoinColumn(name = "room_id", referencedColumnName = "id")})
+    @ManyToMany(mappedBy = "rooms", fetch = FetchType.LAZY)
     private List<UserEntity> users;
 }

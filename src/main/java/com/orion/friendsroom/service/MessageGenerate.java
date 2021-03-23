@@ -54,12 +54,13 @@ public class MessageGenerate {
     }
 
     public static String getMessageForRoom(RoomEntity room) {
-        room.setActivationCode(generateCode());
         return String.format(
                 "Hello, %s!\n" +
+                        "Your Room was created with id: %s.\n" +
                         "Please, visit next link to confirm create room: %s\n " +
                         "http://localhost:8070/friends-room/api/v1/activate/room/%s",
                 room.getOwner().getFirstName(),
+                room.getId(),
                 room.getName(),
                 room.getActivationCode()
         );
