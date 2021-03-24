@@ -1,6 +1,7 @@
 package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.dto.user.UserDto;
@@ -31,15 +32,15 @@ public class RoomController {
 
     @PostMapping(value = "/{userId}/room")
     public RoomDto createRoom(@PathVariable Long userId,
-                              @RequestBody RoomDto roomDto) {
-        return roomMapper.toDto(roomService.createRoom(userId, roomDto));
+                              @RequestBody RoomCreationDto roomCreationDto) {
+        return roomMapper.toDto(roomService.createRoom(userId, roomCreationDto));
     }
 
     @GetMapping(value = "/rooms")
-    public List<RoomDto> getAllRooms() {
+    public List<RoomCreationDto> getAllRooms() {
         List<RoomEntity> rooms = roomService.getAllRooms();
         return rooms.stream()
-                .map(roomMapper::toDto)
+                .map(roomMapper::toCreationDto)
                 .collect(Collectors.toList());
     }
 
@@ -54,10 +55,9 @@ public class RoomController {
     }
 
     @PostMapping(value = "/add-user-room/{roomId}")
-    public ResponseEntity<?> addGuestToRoom(@RequestBody EmailUserDto emailUserDto,
+    public RoomDto addGuestToRoom(@RequestBody EmailUserDto emailUserDto,
                                             @PathVariable Long roomId) {
-        roomService.addGuestToRoom(emailUserDto, roomId);
-        return ResponseEntity.ok().build();
+        return roomMapper.toDto(roomService.addGuestToRoom(emailUserDto, roomId));
     }
 
     @GetMapping(value = "/guests/{roomId}")
@@ -69,10 +69,9 @@ public class RoomController {
     }
 
     @DeleteMapping(value = "/drop-user-room/{roomId}")
-    public ResponseEntity<?> deleteGuestFromRoom(@RequestBody EmailUserDto emailUserDto,
+    public RoomDto deleteGuestFromRoom(@RequestBody EmailUserDto emailUserDto,
                                                  @PathVariable Long roomId) {
-        roomService.deleteGuestFromRoom(emailUserDto, roomId);
-        return ResponseEntity.ok().build();
+        return roomMapper.toDto(roomService.deleteGuestFromRoom(emailUserDto, roomId));
     }
 
     @DeleteMapping(value = "/owner-room/{roomId}")
@@ -83,8 +82,8 @@ public class RoomController {
     }
 
     @PutMapping(value = "/update-room/{roomId}")
-    public RoomDto updateRoomById(@RequestBody RoomDto roomDto,
-                                  @PathVariable Long roomId) {
-        return roomMapper.toDto(roomService.updateRoomById(roomDto, roomId));
+    public RoomDto updateRoomById(@RequestBody RoomCreationDto roomCreationDto,
+                                          @PathVariable Long roomId) {
+        return roomMapper.toDto(roomService.updateRoomById(roomCreationDto, roomId));
     }
 }

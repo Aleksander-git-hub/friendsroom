@@ -1,7 +1,7 @@
 package com.orion.friendsroom.service.impl;
 
 import com.orion.friendsroom.dto.admin.EmailUserDto;
-import com.orion.friendsroom.dto.room.RoomDto;
+import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoomEntity;
@@ -43,21 +43,21 @@ public class RoomServiceImpl implements RoomService {
 
     @Transactional
     @Override
-    public RoomEntity createRoom(Long userId, RoomDto roomDto) {
-        RoomValidator.validateRoom(roomDto);
+    public RoomEntity createRoom(Long userId, RoomCreationDto roomCreationDto) {
+        RoomValidator.validateRoom(roomCreationDto);
 
         UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
 
-        if (!existingUser.equals(userRepository.findByEmail(roomDto.getOwner().getEmail()))) {
+        if (!existingUser.equals(userRepository.findByEmail(roomCreationDto.getOwner().getEmail()))) {
             throw new NotFoundException("You create a room, you must own it!");
         }
 
-        if (roomRepository.findByName(roomDto.getName()) != null) {
+        if (roomRepository.findByName(roomCreationDto.getName()) != null) {
             throw new NotFoundException("The Room with name already exist!");
         }
 
-        RoomEntity creationRoom = roomMapper.toEntity(roomDto);
+        RoomEntity creationRoom = roomMapper.toEntity(roomCreationDto);
         creationRoom.setCreated(new Date());
         creationRoom.setUpdated(creationRoom.getCreated());
         creationRoom.setStatus(Status.NOT_CONFIRMED);
@@ -119,7 +119,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Transactional
     @Override
-    public void addGuestToRoom(EmailUserDto emailUserDto, Long roomId) {
+    public RoomEntity addGuestToRoom(EmailUserDto emailUserDto, Long roomId) {
         if (StringUtils.isEmpty(emailUserDto.getEmail())) {
             throw new NotFoundException("Enter user's email!");
         }
@@ -149,6 +149,8 @@ public class RoomServiceImpl implements RoomService {
 
         String message = MessageGenerate.getMessageAddGuest(existingUser, existingRoom);
         mailSender.send(existingUser.getEmail(), "Welcome to the Room!", message);
+
+        return existingRoom;
     }
 
     @Override
@@ -160,7 +162,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Transactional
     @Override
-    public void deleteGuestFromRoom(EmailUserDto emailUserDto, Long roomId) {
+    public RoomEntity deleteGuestFromRoom(EmailUserDto emailUserDto, Long roomId) {
         if (StringUtils.isEmpty(emailUserDto.getEmail())) {
             throw new NotFoundException("Enter user's email!");
         }
@@ -187,6 +189,8 @@ public class RoomServiceImpl implements RoomService {
 
         String message = MessageGenerate.getMessageDeleteGuest(existingUser, existingRoom);
         mailSender.send(existingUser.getEmail(), "Exclusion", message);
+
+        return existingRoom;
     }
 
     @Transactional
@@ -204,11 +208,6 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException("Owner not found by email: " + emailUserDto.getEmail());
         }
 
-        existingRoom.getUsers().forEach(user -> {
-            String message = MessageGenerate.getMessageForGuests(user, existingRoom);
-            mailSender.send(user.getEmail(), "Deleting a Room", message);
-        });
-
         existingUser.getUserRooms().remove(existingRoom);
         existingUser.getRooms().remove(existingRoom);
         existingUser.setUpdated(new Date());
@@ -216,31 +215,36 @@ public class RoomServiceImpl implements RoomService {
         existingRoom.setStatus(Status.DELETED);
         existingRoom.setUpdated(new Date());
 
+        existingRoom.getUsers().forEach(user -> {
+            String message = MessageGenerate.getMessageForGuests(user, existingRoom);
+            mailSender.send(user.getEmail(), "Deleting a Room", message);
+        });
+
         userRepository.save(existingUser);
         roomRepository.save(existingRoom);
     }
 
     @Transactional
     @Override
-    public RoomEntity updateRoomById(RoomDto roomDto, Long roomId) {
-        RoomValidator.validateRoom(roomDto);
+    public RoomEntity updateRoomById(RoomCreationDto roomCreationDto, Long roomId) {
+        RoomValidator.validateRoom(roomCreationDto);
 
         RoomEntity updatingRoom = getRoomById(roomId);
 
-        if (!updatingRoom.getOwner().getEmail().equals(roomDto.getOwner().getEmail())) {
+        if (!updatingRoom.getOwner().getEmail().equals(roomCreationDto.getOwner().getEmail())) {
             throw new NotFoundException("Enter owner's email!");
         }
 
-        UserEntity existingUser = userRepository.findByEmail(roomDto.getOwner().getEmail());
+        UserEntity existingUser = userRepository.findByEmail(roomCreationDto.getOwner().getEmail());
 
         if (existingUser == null) {
             throw new NotFoundException("User not found by email: " +
-                    roomDto.getOwner().getEmail());
+                    roomCreationDto.getOwner().getEmail());
         }
 
         RoomValidator.validateStatus(updatingRoom);
 
-        roomMapper.updateRoomEntityFromRoomDto(roomDto, updatingRoom);
+        roomMapper.updateRoomEntityFromRoomDto(roomCreationDto, updatingRoom);
 
         String message = MessageGenerate.getMessageForUpdateRoom(updatingRoom);
         mailSender.send(existingUser.getEmail(), "Updating Room", message);

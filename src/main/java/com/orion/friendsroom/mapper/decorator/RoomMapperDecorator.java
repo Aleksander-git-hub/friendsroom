@@ -1,7 +1,7 @@
 package com.orion.friendsroom.mapper.decorator;
 
 import com.orion.friendsroom.dto.admin.RoomForAdminDto;
-import com.orion.friendsroom.dto.room.RoomDto;
+import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.mapper.RoomMapper;
 import com.orion.friendsroom.mapper.UserMapper;
@@ -28,9 +28,9 @@ public abstract class RoomMapperDecorator implements RoomMapper {
     }
 
     @Override
-    public RoomEntity toEntity(RoomDto roomDto) {
-        RoomEntity room = delegate.toEntity(roomDto);
-        room.setOwner(userRepository.findByEmail(roomDto.getOwner().getEmail()));
+    public RoomEntity toEntity(RoomCreationDto roomCreationDto) {
+        RoomEntity room = delegate.toEntity(roomCreationDto);
+        room.setOwner(userRepository.findByEmail(roomCreationDto.getOwner().getEmail()));
         return room;
     }
 }

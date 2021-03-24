@@ -5,18 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomDto {
+public class RoomCreationDto {
 
-    private Long id;
-
+    @NotBlank
     private String name;
 
+    @NotBlank
     private EmailUserDto owner;
-
-    private List<EmailUserDto> users;
 }
