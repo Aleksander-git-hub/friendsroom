@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -62,6 +63,7 @@ public class RoomServiceImpl implements RoomService {
         creationRoom.setStatus(Status.NOT_CONFIRMED);
         creationRoom.setOwner(existingUser);
         creationRoom.setActivationCode(UUID.randomUUID().toString());
+        creationRoom.setUsers(new ArrayList<>());
         creationRoom.getUsers().add(existingUser);
         roomRepository.save(creationRoom);
 
@@ -223,22 +225,27 @@ public class RoomServiceImpl implements RoomService {
     public RoomEntity updateRoomById(RoomDto roomDto, Long roomId) {
         RoomValidator.validateRoom(roomDto);
 
-        UserEntity existingUser = userRepository.findByEmail(roomDto.getOwner().getEmail());
+        RoomEntity updatingRoom = getRoomById(roomId);
 
-        RoomEntity existingRoom = getRoomById(roomId);
-
-        if (!existingRoom.getOwner().equals(existingUser)) {
-            throw new NotFoundException("Owner not found by email: " + existingUser.getEmail());
+        if (!updatingRoom.getOwner().getEmail().equals(roomDto.getOwner().getEmail())) {
+            throw new NotFoundException("Enter owner's email!");
         }
 
-        RoomValidator.validateStatus(existingRoom);
+        UserEntity existingUser = userRepository.findByEmail(roomDto.getOwner().getEmail());
 
-        roomMapper.updateRoomEntityFromRoomDto(roomDto, existingRoom);
+        if (existingUser == null) {
+            throw new NotFoundException("User not found by email: " +
+                    roomDto.getOwner().getEmail());
+        }
 
-        String message = MessageGenerate.getMessageForUpdateRoom(existingRoom);
+        RoomValidator.validateStatus(updatingRoom);
+
+        roomMapper.updateRoomEntityFromRoomDto(roomDto, updatingRoom);
+
+        String message = MessageGenerate.getMessageForUpdateRoom(updatingRoom);
         mailSender.send(existingUser.getEmail(), "Updating Room", message);
 
-        existingRoom.setUpdated(new Date());
-        return roomRepository.save(existingRoom);
+        updatingRoom.setUpdated(new Date());
+        return roomRepository.save(updatingRoom);
     }
 }

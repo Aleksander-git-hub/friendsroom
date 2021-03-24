@@ -72,7 +72,7 @@ public class MessageGenerate {
         return String.format(
                 "Hello, %s!\n" +
                         "Please, visit next link for confirm updating Room: %s:\n " +
-                        "http://localhost:8070/friends-room/api/v1/activate/%s",
+                        "http://localhost:8070/friends-room/api/v1/activate/room/%s",
                 updatingRoom.getOwner().getFirstName(),
                 updatingRoom.getName(),
                 updatingRoom.getActivationCode()
