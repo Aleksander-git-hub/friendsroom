@@ -137,14 +137,16 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException("This guest is already here!");
         }
 
-        existingRoom.getUsers().add(existingUser);
-        existingRoom.setUpdated(new Date());
-
         existingUser.getRooms().add(existingRoom);
         existingUser.setUpdated(new Date());
         userRepository.save(existingUser);
 
+        existingRoom.getUsers().add(existingUser);
+        existingRoom.setUpdated(new Date());
         roomRepository.save(existingRoom);
+
+        String message = MessageGenerate.getMessageAddGuest(existingUser, existingRoom);
+        mailSender.send(existingUser.getEmail(), "Welcome to the Room!", message);
     }
 
     @Override
@@ -180,6 +182,9 @@ public class RoomServiceImpl implements RoomService {
         existingRoom.getUsers().remove(existingUser);
         existingRoom.setUpdated(new Date());
         roomRepository.save(existingRoom);
+
+        String message = MessageGenerate.getMessageDeleteGuest(existingUser, existingRoom);
+        mailSender.send(existingUser.getEmail(), "Exclusion", message);
     }
 
     @Transactional
@@ -197,12 +202,19 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException("Owner not found by email: " + emailUserDto.getEmail());
         }
 
+        existingRoom.getUsers().forEach(user -> {
+            String message = MessageGenerate.getMessageForGuests(user, existingRoom);
+            mailSender.send(user.getEmail(), "Deleting a Room", message);
+        });
+
         existingUser.getUserRooms().remove(existingRoom);
+        existingUser.getRooms().remove(existingRoom);
         existingUser.setUpdated(new Date());
-        userRepository.save(existingUser);
 
         existingRoom.setStatus(Status.DELETED);
         existingRoom.setUpdated(new Date());
+
+        userRepository.save(existingUser);
         roomRepository.save(existingRoom);
     }
 

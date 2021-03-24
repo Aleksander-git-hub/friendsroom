@@ -93,4 +93,23 @@ public class MessageGenerate {
                 room.getStatus()
         );
     }
+
+    public static String getMessageAddGuest(UserEntity user, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "User %s create a new Room: %s and invited you!\n" + "Welcome!",
+                user.getFirstName(),
+                room.getOwner().getEmail(),
+                room.getName()
+        );
+    }
+
+    public static String getMessageDeleteGuest(UserEntity user, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "You are expelled from the Room: %s",
+                user.getFirstName(),
+                room.getName()
+        );
+    }
 }
