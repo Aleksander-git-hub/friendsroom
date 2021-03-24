@@ -62,9 +62,12 @@ public class RoomServiceImpl implements RoomService {
         creationRoom.setStatus(Status.NOT_CONFIRMED);
         creationRoom.setOwner(existingUser);
         creationRoom.setActivationCode(UUID.randomUUID().toString());
+        creationRoom.getUsers().add(existingUser);
         roomRepository.save(creationRoom);
 
         existingUser.getUserRooms().add(creationRoom);
+        existingUser.getRooms().add(creationRoom);
+        existingUser.setUpdated(new Date());
         userRepository.save(existingUser);
 
         String message = MessageGenerate.getMessageForRoom(creationRoom);
@@ -169,6 +172,10 @@ public class RoomServiceImpl implements RoomService {
         if (!existingRoom.getUsers().contains(existingUser)) {
             throw new NotFoundException("This guest not found in room");
         }
+
+        existingUser.getRooms().remove(existingRoom);
+        existingUser.setUpdated(new Date());
+        userRepository.save(existingUser);
 
         existingRoom.getUsers().remove(existingUser);
         existingRoom.setUpdated(new Date());

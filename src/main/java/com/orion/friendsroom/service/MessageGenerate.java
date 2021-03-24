@@ -82,4 +82,15 @@ public class MessageGenerate {
     private static String generateCode() {
         return UUID.randomUUID().toString();
     }
+
+    public static String getMessageForGuests(UserEntity user, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "The Room: %s, you are in has changed status!\n" +
+                        "Room's status: %s",
+                user.getFirstName(),
+                room.getName(),
+                room.getStatus()
+        );
+    }
 }

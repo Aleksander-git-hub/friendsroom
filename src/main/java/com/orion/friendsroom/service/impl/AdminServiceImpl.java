@@ -219,8 +219,14 @@ public class AdminServiceImpl implements AdminService {
 
         existingRoom.setStatus(status.getStatus());
         existingRoom.setUpdated(new Date());
+        roomRepository.save(existingRoom);
 
-        return roomRepository.save(existingRoom);
+        existingRoom.getUsers().forEach(userEntity -> {
+            String message = MessageGenerate.getMessageForGuests(userEntity, existingRoom);
+            mailSender.send(userEntity.getEmail(), "Change Status Of Room", message);
+        });
+
+        return existingRoom;
     }
 
     @Transactional
@@ -235,6 +241,8 @@ public class AdminServiceImpl implements AdminService {
         existingRoom.setStatus(Status.DELETED);
         existingRoom.setUpdated(new Date());
         roomRepository.save(existingRoom);
+
+        deletingNotification(existingRoom);
     }
 
     @Transactional
@@ -252,8 +260,9 @@ public class AdminServiceImpl implements AdminService {
 
         existingRoom.setStatus(Status.DELETED);
         existingRoom.setUpdated(new Date());
-
         roomRepository.save(existingRoom);
+
+        deletingNotification(existingRoom);
     }
 
     @Override
@@ -274,6 +283,14 @@ public class AdminServiceImpl implements AdminService {
             roomEntity.setStatus(Status.DELETED);
             roomEntity.setUpdated(new Date());
             roomRepository.save(roomEntity);
+            deletingNotification(roomEntity);
+        });
+    }
+    
+    private void deletingNotification(RoomEntity room) {
+        room.getUsers().forEach(userEntity -> {
+            String message = MessageGenerate.getMessageForGuests(userEntity, room);
+            mailSender.send(userEntity.getEmail(), "Deleting a Room", message);
         });
     }
 }
