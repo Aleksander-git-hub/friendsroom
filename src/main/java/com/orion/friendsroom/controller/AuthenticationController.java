@@ -17,16 +17,8 @@ public class AuthenticationController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AdminService adminService;
-
     @PostMapping(value = "/login")
     public AuthenticationResponseDto loginUser(@RequestBody AuthenticationRequestDto requestDto) {
         return userService.validateUserLogin(requestDto);
-    }
-
-    @PostMapping(value = "/admin/login")
-    public AuthenticationResponseDto loginAdmin(@RequestBody AuthenticationRequestDto requestDto) {
-        return adminService.validateAdminLogin(requestDto);
     }
 }

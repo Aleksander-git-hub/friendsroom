@@ -11,8 +11,6 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class RegisterDto {
 
-    private Long id;
-
     @NotBlank
     private String email;
 

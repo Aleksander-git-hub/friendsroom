@@ -42,7 +42,7 @@ public class AdminController {
         return userMapper.toDtoForAdmin(adminService.getUserById(id));
     }
 
-    @GetMapping(value = "/user/user-email")
+    @GetMapping(value = "/user-email")
     public UserForAdminDto getUserByEmail(
             @RequestBody EmailUserDto email) {
         return userMapper.toDtoForAdmin(adminService.getUserByEmail(email));
