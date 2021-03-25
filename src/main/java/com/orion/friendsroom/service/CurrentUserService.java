@@ -1,6 +1,7 @@
 package com.orion.friendsroom.service;
 
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class CurrentUserService {
 
     @Autowired
-    private AdminService adminService;
+    private UserRepository userRepository;
 
     public String getCurrentUserEmail() {
         String email = null;
@@ -24,11 +25,11 @@ public class CurrentUserService {
     }
 
     public UserEntity getCurrentUser() {
-        UserEntity principal = (UserEntity) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal != null) {
-            return adminService.getUserById(principal.getId());
+        if (principal instanceof UserDetails) {
+            String currentEmail = getCurrentUserEmail();
+            return userRepository.findByEmail(currentEmail);
         }
 
         return null;

@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -177,6 +178,8 @@ public class UserServiceImpl implements UserService {
 
         currentUser.setEmail(emailUserDto.getEmail());
         currentUser.setUpdated(new Date());
+        currentUser.setStatus(Status.NOT_CONFIRMED);
+        currentUser.setActivationCode(UUID.randomUUID().toString());
 
         userRepository.save(currentUser);
 
@@ -201,6 +204,8 @@ public class UserServiceImpl implements UserService {
 
         existingUser.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
         existingUser.setUpdated(new Date());
+        existingUser.setStatus(Status.NOT_CONFIRMED);
+        existingUser.setActivationCode(UUID.randomUUID().toString());
 
         userRepository.save(existingUser);
 

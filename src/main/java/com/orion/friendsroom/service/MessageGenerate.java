@@ -16,8 +16,8 @@ public class MessageGenerate {
         entity.setCreated(new Date());
         entity.setUpdated(entity.getCreated());
         entity.setRoles(roles);
-        entity.setActivationCode(generateCode());
         entity.setStatus(Status.NOT_CONFIRMED);
+        entity.setActivationCode(generateCode());
     }
 
     public static String getMessageForUser(UserEntity user) {
@@ -41,8 +41,6 @@ public class MessageGenerate {
     }
 
     public static String getMessageForUpdateUser(UserEntity updatingUser) {
-        updatingUser.setActivationCode(generateCode());
-        updatingUser.setStatus(Status.NOT_CONFIRMED);
         return String.format(
                 "Hello, %s!\n" +
                         "Please, visit next link to confirm your update: " +
