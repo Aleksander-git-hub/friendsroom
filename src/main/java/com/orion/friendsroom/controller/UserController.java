@@ -31,7 +31,7 @@ public class UserController {
 
     @PutMapping(value = "/update-email")
     public UserDto updateEmailOfUser(@RequestBody EmailUserDto emailUserDto) {
-        return userMapper.toDto(userService.updateEmailOfUser(emailUserDto));
+        return userMapper.toDto(userService.updateUserEmail(emailUserDto));
     }
 
     @PutMapping(value = "/update-password")

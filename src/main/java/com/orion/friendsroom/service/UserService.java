@@ -24,7 +24,7 @@ public interface UserService {
 
     UserEntity updateUser(UserUpdateDto userUpdateDto);
 
-    UserEntity updateEmailOfUser(EmailUserDto emailUserDto);
+    UserEntity updateUserEmail(EmailUserDto emailUserDto);
 
     UserEntity changePassword(PasswordDto passwordDto);
 }

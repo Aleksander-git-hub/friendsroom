@@ -17,8 +17,6 @@ public interface UserMapper {
 
     UserDto toDto(UserEntity userEntity);
 
-    UserForAdminDto toDtoForAdmin(UserEntity userEntity);
-
     EmailUserDto toEmailUserDto(UserEntity userEntity);
 
     @Mapping(target = "id", ignore = true)

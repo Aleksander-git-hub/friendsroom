@@ -3,6 +3,7 @@ package com.orion.friendsroom.controller;
 import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.admin.*;
 import com.orion.friendsroom.dto.room.RoomNameDto;
+import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.mapper.AdminMapper;
@@ -34,25 +35,35 @@ public class AdminController {
 
     @PostMapping(value = "/register")
     public AdminDto registerAdmin(@RequestBody RegisterDto adminRegisterDto) {
-        return adminMapper.toSuccessRegister(adminService.registerAdmin(adminRegisterDto));
+        return adminMapper.toAdminDto(adminService.registerAdmin(adminRegisterDto));
+    }
+
+    @PutMapping(value = "/update-email")
+    public AdminDto updateAdminEmail(@RequestBody EmailUserDto emailUserDto) {
+        return adminMapper.toAdminDto(adminService.updateAdminEmail(emailUserDto));
+    }
+
+    @PutMapping(value = "/change-password")
+    public AdminDto changePassword(@RequestBody PasswordDto passwordDto) {
+        return adminMapper.toAdminDto(adminService.changePassword(passwordDto));
     }
 
     @GetMapping(value = "/user/{id}")
     public UserForAdminDto getUserById(@PathVariable Long id) {
-        return userMapper.toDtoForAdmin(adminService.getUserById(id));
+        return adminMapper.toDtoForAdmin(adminService.getUserById(id));
     }
 
     @GetMapping(value = "/user-email")
     public UserForAdminDto getUserByEmail(
             @RequestBody EmailUserDto email) {
-        return userMapper.toDtoForAdmin(adminService.getUserByEmail(email));
+        return adminMapper.toDtoForAdmin(adminService.getUserByEmail(email));
     }
 
     @GetMapping(value = "/all-users")
     public List<UserForAdminDto> getAllUsers() {
         List<UserEntity> users = adminService.getAllUsers();
         return users.stream()
-                .map(userMapper::toDtoForAdmin)
+                .map(adminMapper::toDtoForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -60,7 +71,7 @@ public class AdminController {
     public List<UserForAdminDto> getAllBannedUsers() {
         List<UserEntity> bannedUsers = adminService.getAllBannedUsers();
         return bannedUsers.stream()
-                .map(userMapper::toDtoForAdmin)
+                .map(adminMapper::toDtoForAdmin)
                 .collect(Collectors.toList());
     }
 
@@ -68,14 +79,14 @@ public class AdminController {
     public List<UserForAdminDto> getAllActiveUsers() {
         List<UserEntity> activeUsers = adminService.getAllActiveUsers();
         return activeUsers.stream()
-                .map(userMapper::toDtoForAdmin)
+                .map(adminMapper::toDtoForAdmin)
                 .collect(Collectors.toList());
     }
 
     @PutMapping(value = "/change-status/{id}")
     public UserForAdminDto changeStatusForUserById(@RequestBody StatusDto status,
                                                    @PathVariable Long id) {
-        return userMapper.toDtoForAdmin(adminService.changeStatusForUserById(status, id));
+        return adminMapper.toDtoForAdmin(adminService.changeStatusForUserById(status, id));
     }
 
     @DeleteMapping(value = "/user/{id}")
@@ -95,7 +106,7 @@ public class AdminController {
     public List<RoomForAdminDto> getRoomsByOwner(@RequestBody EmailUserDto emailUserDto) {
         List<RoomEntity> rooms = adminService.getRoomsByOwner(emailUserDto);
         return rooms.stream()
-                .map(roomMapper::toAdminDto)
+                .map(adminMapper::roomToAdminDto)
                 .collect(Collectors.toList());
     }
 
@@ -103,20 +114,20 @@ public class AdminController {
     public List<RoomForAdminDto> getAllRooms() {
         List<RoomEntity> rooms = adminService.getAllRooms();
         return rooms.stream()
-                .map(roomMapper::toAdminDto)
+                .map(adminMapper::roomToAdminDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping(value = "/room/{id}")
     public RoomForAdminDto getRoomById(@PathVariable Long id) {
-        return roomMapper.toAdminDto(adminService.getRoomById(id));
+        return adminMapper.roomToAdminDto(adminService.getRoomById(id));
     }
 
     @GetMapping(value = "/all-banned-rooms")
     public List<RoomForAdminDto> getAllBannedRoom() {
         List<RoomEntity> bannedRooms = adminService.getAllBannedRooms();
         return bannedRooms.stream()
-                .map(roomMapper::toAdminDto)
+                .map(adminMapper::roomToAdminDto)
                 .collect(Collectors.toList());
     }
 
@@ -124,14 +135,14 @@ public class AdminController {
     public List<RoomForAdminDto> getAllActiveRoom() {
         List<RoomEntity> activeRooms = adminService.getAllActiveRooms();
         return activeRooms.stream()
-                .map(roomMapper::toAdminDto)
+                .map(adminMapper::roomToAdminDto)
                 .collect(Collectors.toList());
     }
 
     @PutMapping(value = "/room-change-status/{id}")
     public RoomForAdminDto changeStatusForRoomById(@RequestBody StatusDto status,
                                                    @PathVariable Long id) {
-        return roomMapper.toAdminDto(adminService.changeStatusForRoomById(status, id));
+        return adminMapper.roomToAdminDto(adminService.changeStatusForRoomById(status, id));
     }
 
     @DeleteMapping(value = "/room/{id}")

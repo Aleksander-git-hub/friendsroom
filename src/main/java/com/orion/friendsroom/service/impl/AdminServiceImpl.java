@@ -6,6 +6,7 @@ import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.admin.EmailUserDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
+import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.RoomEntity;
@@ -18,6 +19,7 @@ import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.security.JwtProvider;
 import com.orion.friendsroom.service.AdminService;
+import com.orion.friendsroom.service.CurrentUserService;
 import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.UserService;
 import com.orion.friendsroom.service.validation.EntityValidator;
@@ -58,6 +60,9 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     @Transactional
     @Override
     public UserEntity registerAdmin(RegisterDto adminRegisterDto) {
@@ -91,6 +96,11 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public UserEntity updateAdminEmail(EmailUserDto emailUserDto) {
+        return userService.updateUserEmail(emailUserDto);
+    }
+
+    @Override
     public UserEntity getUserByEmail(EmailUserDto email) {
         UserEntity existingUser = userRepository.findByEmail(email.getEmail());
 
@@ -102,14 +112,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public AuthenticationResponseDto validateAdminLogin(AuthenticationRequestDto requestDto) {
-        EntityValidator.validateAuthentication(requestDto);
-
-        UserEntity admin = userService.findByEmailAndPassword(requestDto.getEmail(), requestDto.getPassword());
-
-        EntityValidator.validateStatus(admin);
-
-        return new AuthenticationResponseDto(jwtProvider.generateToken(admin.getEmail()));
+    public UserEntity changePassword(PasswordDto passwordDto) {
+        return userService.changePassword(passwordDto);
     }
 
     @Override

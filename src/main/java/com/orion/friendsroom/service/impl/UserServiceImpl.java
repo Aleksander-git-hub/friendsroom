@@ -155,6 +155,7 @@ public class UserServiceImpl implements UserService {
         userMapper.updateUserEntityFromUserUpdateDto(userForUpdate, currentUser);
 
         currentUser.setUpdated(new Date());
+        currentUser.setActivationCode(UUID.randomUUID().toString());
 
         userRepository.save(currentUser);
 
@@ -166,7 +167,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserEntity updateEmailOfUser(EmailUserDto emailUserDto) {
+    public UserEntity updateUserEmail(EmailUserDto emailUserDto) {
         UserEntity currentUser = currentUserService.getCurrentUser();
         EntityValidator.validateCurrentUser(currentUser);
         EntityValidator.validateForUpdateEmail(emailUserDto, currentUser.getEmail());

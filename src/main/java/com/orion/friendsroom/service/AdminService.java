@@ -3,9 +3,11 @@ package com.orion.friendsroom.service;
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
+import com.orion.friendsroom.dto.admin.AdminDto;
 import com.orion.friendsroom.dto.admin.EmailUserDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
+import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 
@@ -15,9 +17,11 @@ public interface AdminService {
 
     UserEntity registerAdmin(RegisterDto adminRegisterDto);
 
+    UserEntity updateAdminEmail(EmailUserDto emailUserDto);
+
     UserEntity getUserByEmail(EmailUserDto email);
 
-    AuthenticationResponseDto validateAdminLogin(AuthenticationRequestDto requestDto);
+    UserEntity changePassword(PasswordDto passwordDto);
 
     UserEntity getUserById(Long userId);
 
