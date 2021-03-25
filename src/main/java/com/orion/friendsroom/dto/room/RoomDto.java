@@ -1,6 +1,6 @@
 package com.orion.friendsroom.dto.room;
 
-import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

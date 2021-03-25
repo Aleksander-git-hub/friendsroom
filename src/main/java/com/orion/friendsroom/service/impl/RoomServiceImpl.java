@@ -1,6 +1,6 @@
 package com.orion.friendsroom.service.impl;
 
-import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.email.MailSender;
@@ -15,7 +15,6 @@ import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.service.CurrentUserService;
 import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.RoomService;
-import com.orion.friendsroom.service.UserService;
 import com.orion.friendsroom.service.validation.EntityValidator;
 import com.orion.friendsroom.service.validation.RoomValidator;
 import org.apache.commons.lang3.StringUtils;

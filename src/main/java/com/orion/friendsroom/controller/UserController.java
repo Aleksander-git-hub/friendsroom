@@ -1,6 +1,6 @@
 package com.orion.friendsroom.controller;
 
-import com.orion.friendsroom.dto.admin.EmailUserDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.dto.user.UserUpdateDto;

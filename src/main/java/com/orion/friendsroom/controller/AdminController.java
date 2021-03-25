@@ -1,14 +1,16 @@
 package com.orion.friendsroom.controller;
 
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.admin.*;
+import com.orion.friendsroom.dto.admin.AdminDto;
+import com.orion.friendsroom.dto.admin.RoomForAdminDto;
+import com.orion.friendsroom.dto.admin.StatusDto;
+import com.orion.friendsroom.dto.admin.UserForAdminDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.mapper.AdminMapper;
-import com.orion.friendsroom.mapper.RoomMapper;
-import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +28,6 @@ public class AdminController {
 
     @Autowired
     private AdminMapper adminMapper;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private RoomMapper roomMapper;
 
     @PostMapping(value = "/register")
     public AdminDto registerAdmin(@RequestBody RegisterDto adminRegisterDto) {

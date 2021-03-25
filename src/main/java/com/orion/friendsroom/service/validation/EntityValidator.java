@@ -2,8 +2,8 @@ package com.orion.friendsroom.service.validation;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.admin.EmailUserDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserUpdateDto;
 import com.orion.friendsroom.entity.BaseEntity;

@@ -1,11 +1,9 @@
 package com.orion.friendsroom.service.impl;
 
-import com.orion.friendsroom.dto.AuthenticationRequestDto;
-import com.orion.friendsroom.dto.AuthenticationResponseDto;
 import com.orion.friendsroom.dto.RegisterDto;
-import com.orion.friendsroom.dto.admin.EmailUserDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
@@ -17,9 +15,7 @@ import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.repository.RoleRepository;
 import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
-import com.orion.friendsroom.security.JwtProvider;
 import com.orion.friendsroom.service.AdminService;
-import com.orion.friendsroom.service.CurrentUserService;
 import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.UserService;
 import com.orion.friendsroom.service.validation.EntityValidator;
@@ -46,9 +42,6 @@ public class AdminServiceImpl implements AdminService {
     private RoleRepository roleRepository;
 
     @Autowired
-    private JwtProvider jwtProvider;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -59,9 +52,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private RoomRepository roomRepository;
-
-    @Autowired
-    private CurrentUserService currentUserService;
 
     @Transactional
     @Override
