@@ -2,13 +2,14 @@ package com.orion.friendsroom.service.validation;
 
 import com.orion.friendsroom.dto.AuthenticationRequestDto;
 import com.orion.friendsroom.dto.RegisterDto;
+import com.orion.friendsroom.dto.admin.EmailUserDto;
 import com.orion.friendsroom.dto.admin.StatusDto;
 import com.orion.friendsroom.dto.user.PasswordDto;
-import com.orion.friendsroom.dto.user.UserDto;
-import com.orion.friendsroom.dto.user.EmailDto;
+import com.orion.friendsroom.dto.user.UserUpdateDto;
 import com.orion.friendsroom.entity.BaseEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,27 +46,32 @@ public class EntityValidator {
         validatePasswordsFields(registerDto.getPassword(), registerDto.getRepeatPassword());
     }
 
-    public static void validateForUpdate(UserDto userForUpdate) {
-        if (StringUtils.isEmpty(userForUpdate.getEmail()) ||
-            StringUtils.isEmpty(userForUpdate.getFirstName()) ||
+    public static void validateForUpdate(UserUpdateDto userForUpdate) {
+        if (StringUtils.isEmpty(userForUpdate.getFirstName()) ||
             StringUtils.isEmpty(userForUpdate.getSecondName())) {
             throw new NotFoundException("Some fields are empty! Please, check this!");
         }
     }
 
-    public static void validateForUpdateEmail(EmailDto emailDto) {
-        if (StringUtils.isEmpty(emailDto.getOldEmail()) ||
-            StringUtils.isEmpty(emailDto.getNewEmail())) {
+    public static void validateForUpdateEmail(EmailUserDto emailUserDto, String oldEmail) {
+        if (StringUtils.isEmpty(emailUserDto.getEmail())) {
             throw new NotFoundException("Some fields are empty! Please, check this!");
+        }
+
+        if (emailUserDto.getEmail().equals(oldEmail)) {
+            throw new NotFoundException("Same email!");
         }
     }
 
     public static void validateForPasswordChange(PasswordDto passwordDto) {
-        if (StringUtils.isEmpty(passwordDto.getEmail()) ||
-            StringUtils.isEmpty(passwordDto.getOldPassword()) ||
+        if (StringUtils.isEmpty(passwordDto.getOldPassword()) ||
             StringUtils.isEmpty(passwordDto.getNewPassword()) ||
             StringUtils.isEmpty(passwordDto.getRepeatNewPassword())) {
             throw new NotFoundException("Some fields are empty! Please, check this!");
+        }
+
+        if (passwordDto.getOldPassword().equals(passwordDto.getNewPassword())) {
+            throw new NotFoundException("Same password!");
         }
 
         validatePasswordsFields(passwordDto.getNewPassword(),
@@ -79,12 +85,6 @@ public class EntityValidator {
 
         if (!first.equals(second)) {
             throw new NotFoundException("Passwords mismatch!");
-        }
-    }
-
-    public static void validateWhoseEmail(Long existingId, Long comeId) {
-        if (!existingId.equals(comeId)) {
-            throw new NotFoundException("This email is not yours!!! Please, enter your email.");
         }
     }
 
@@ -103,6 +103,12 @@ public class EntityValidator {
                     entity.getId(),
                     status.getStatus()
             ));
+        }
+    }
+
+    public static void validateCurrentUser(UserEntity currentUser) {
+        if (currentUser == null) {
+            throw new ForbiddenError("Access denied");
         }
     }
 }

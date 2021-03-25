@@ -23,10 +23,9 @@ public class MessageGenerate {
     public static String getMessageForUser(UserEntity user) {
         return String.format(
                 "Hello, %s!\n" +
-                        "Welcome to FriendsRoom! Your ID: %s. Please, visit next link:\n " +
+                        "Welcome to FriendsRoom! Please, visit next link:\n " +
                         "http://localhost:8070/friends-room/api/v1/activate/%s",
                 user.getFirstName(),
-                user.getId(),
                 user.getActivationCode()
         );
     }
@@ -56,7 +55,7 @@ public class MessageGenerate {
     public static String getMessageForRoom(RoomEntity room) {
         return String.format(
                 "Hello, %s!\n" +
-                        "Your Room was created with id: %s.\n" +
+                        "Your Room was created! with id: %s.\n" +
                         "Please, visit next link to confirm create room: %s\n " +
                         "http://localhost:8070/friends-room/api/v1/activate/room/%s",
                 room.getOwner().getFirstName(),

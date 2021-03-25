@@ -12,9 +12,6 @@ import javax.validation.constraints.NotBlank;
 public class PasswordDto {
 
     @NotBlank
-    private String email;
-
-    @NotBlank
     private String oldPassword;
 
     @NotBlank

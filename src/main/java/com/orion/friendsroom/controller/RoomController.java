@@ -30,10 +30,9 @@ public class RoomController {
     @Autowired
     private UserMapper userMapper;
 
-    @PostMapping(value = "/{userId}/room")
-    public RoomDto createRoom(@PathVariable Long userId,
-                              @RequestBody RoomCreationDto roomCreationDto) {
-        return roomMapper.toDto(roomService.createRoom(userId, roomCreationDto));
+    @PostMapping(value = "/create-room")
+    public RoomDto createRoom(@RequestBody RoomCreationDto roomCreationDto) {
+        return roomMapper.toDto(roomService.createRoom(roomCreationDto));
     }
 
     @GetMapping(value = "/rooms")
@@ -74,10 +73,9 @@ public class RoomController {
         return roomMapper.toDto(roomService.deleteGuestFromRoom(emailUserDto, roomId));
     }
 
-    @DeleteMapping(value = "/owner-room/{roomId}")
-    public ResponseEntity<?> deleteRoomById(@RequestBody EmailUserDto emailUserDto,
-                                            @PathVariable Long roomId) {
-        roomService.deleteRoomById(emailUserDto, roomId);
+    @DeleteMapping(value = "/delete-room/{roomId}")
+    public ResponseEntity<?> deleteRoomById(@PathVariable Long roomId) {
+        roomService.deleteRoomById(roomId);
         return ResponseEntity.ok().build();
     }
 

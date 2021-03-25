@@ -9,7 +9,7 @@ import com.orion.friendsroom.entity.UserEntity;
 import java.util.List;
 
 public interface RoomService {
-    RoomEntity createRoom(Long userId, RoomCreationDto roomCreationDto);
+    RoomEntity createRoom(RoomCreationDto roomCreationDto);
 
     void activateRoom(String code);
 
@@ -25,7 +25,7 @@ public interface RoomService {
 
     RoomEntity deleteGuestFromRoom(EmailUserDto emailUserDto, Long roomId);
 
-    void deleteRoomById(EmailUserDto emailUserDto, Long roomId);
+    void deleteRoomById(Long roomId);
 
     RoomEntity updateRoomById(RoomCreationDto roomCreationDto, Long roomId);
 }

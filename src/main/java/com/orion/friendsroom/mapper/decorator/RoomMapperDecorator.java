@@ -30,7 +30,7 @@ public abstract class RoomMapperDecorator implements RoomMapper {
     @Override
     public RoomEntity toEntity(RoomCreationDto roomCreationDto) {
         RoomEntity room = delegate.toEntity(roomCreationDto);
-        room.setOwner(userRepository.findByEmail(roomCreationDto.getOwner().getEmail()));
+        //room.setOwner(userRepository.findByEmail(roomCreationDto.getOwner().getEmail()));
         return room;
     }
 }

@@ -9,11 +9,11 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmailDto {
+public class UserUpdateDto {
 
     @NotBlank
-    private String oldEmail;
+    private String firstName;
 
     @NotBlank
-    private String newEmail;
+    private String secondName;
 }

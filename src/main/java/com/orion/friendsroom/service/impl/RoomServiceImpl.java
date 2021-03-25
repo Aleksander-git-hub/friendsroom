@@ -7,12 +7,15 @@ import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.mapper.RoomMapper;
 import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
+import com.orion.friendsroom.service.CurrentUserService;
 import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.RoomService;
+import com.orion.friendsroom.service.UserService;
 import com.orion.friendsroom.service.validation.EntityValidator;
 import com.orion.friendsroom.service.validation.RoomValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -41,17 +44,16 @@ public class RoomServiceImpl implements RoomService {
     @Autowired
     private MailSender mailSender;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     @Transactional
     @Override
-    public RoomEntity createRoom(Long userId, RoomCreationDto roomCreationDto) {
+    public RoomEntity createRoom(RoomCreationDto roomCreationDto) {
         RoomValidator.validateRoom(roomCreationDto);
 
-        UserEntity existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
-
-        if (!existingUser.equals(userRepository.findByEmail(roomCreationDto.getOwner().getEmail()))) {
-            throw new NotFoundException("You create a room, you must own it!");
-        }
+        UserEntity currentUser = currentUserService.getCurrentUser();
+        EntityValidator.validateCurrentUser(currentUser);
 
         if (roomRepository.findByName(roomCreationDto.getName()) != null) {
             throw new NotFoundException("The Room with name already exist!");
@@ -61,19 +63,19 @@ public class RoomServiceImpl implements RoomService {
         creationRoom.setCreated(new Date());
         creationRoom.setUpdated(creationRoom.getCreated());
         creationRoom.setStatus(Status.NOT_CONFIRMED);
-        creationRoom.setOwner(existingUser);
+        creationRoom.setOwner(currentUser);
         creationRoom.setActivationCode(UUID.randomUUID().toString());
         creationRoom.setUsers(new ArrayList<>());
-        creationRoom.getUsers().add(existingUser);
+        creationRoom.getUsers().add(currentUser);
         roomRepository.save(creationRoom);
 
-        existingUser.getUserRooms().add(creationRoom);
-        existingUser.getRooms().add(creationRoom);
-        existingUser.setUpdated(new Date());
-        userRepository.save(existingUser);
+        currentUser.getUserRooms().add(creationRoom);
+        currentUser.getRooms().add(creationRoom);
+        currentUser.setUpdated(new Date());
+        userRepository.save(currentUser);
 
         String message = MessageGenerate.getMessageForRoom(creationRoom);
-        mailSender.send(existingUser.getEmail(), "Creating Room", message);
+        mailSender.send(currentUser.getEmail(), "Creating Room", message);
 
         return creationRoom;
     }
@@ -124,31 +126,37 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException("Enter user's email!");
         }
 
-        UserEntity existingUser = userRepository.findByEmail(emailUserDto.getEmail());
-
-        if (existingUser == null) {
-            throw new NotFoundException("User not found: " + emailUserDto.getEmail());
-        }
-
-        EntityValidator.validateStatus(existingUser);
-
+        UserEntity owner = currentUserService.getCurrentUser();
         RoomEntity existingRoom = getRoomById(roomId);
+
         RoomValidator.validateStatus(existingRoom);
 
-        if (existingRoom.getUsers().contains(existingUser)) {
+        if (!existingRoom.getOwner().equals(owner)) {
+            throw new ForbiddenError("Access denied! Only owner can add other users!");
+        }
+
+        UserEntity addedUser = userRepository.findByEmail(emailUserDto.getEmail());
+
+        if (addedUser == null) {
+            throw new NotFoundException("Added user not found: " + emailUserDto.getEmail());
+        }
+
+        EntityValidator.validateStatus(addedUser);
+
+        if (existingRoom.getUsers().contains(addedUser)) {
             throw new NotFoundException("This guest is already here!");
         }
 
-        existingUser.getRooms().add(existingRoom);
-        existingUser.setUpdated(new Date());
-        userRepository.save(existingUser);
+        addedUser.getRooms().add(existingRoom);
+        addedUser.setUpdated(new Date());
+        userRepository.save(addedUser);
 
-        existingRoom.getUsers().add(existingUser);
+        existingRoom.getUsers().add(addedUser);
         existingRoom.setUpdated(new Date());
         roomRepository.save(existingRoom);
 
-        String message = MessageGenerate.getMessageAddGuest(existingUser, existingRoom);
-        mailSender.send(existingUser.getEmail(), "Welcome to the Room!", message);
+        String message = MessageGenerate.getMessageAddGuest(addedUser, existingRoom);
+        mailSender.send(addedUser.getEmail(), "Welcome to the Room!", message);
 
         return existingRoom;
     }
@@ -163,17 +171,20 @@ public class RoomServiceImpl implements RoomService {
     @Transactional
     @Override
     public RoomEntity deleteGuestFromRoom(EmailUserDto emailUserDto, Long roomId) {
-        if (StringUtils.isEmpty(emailUserDto.getEmail())) {
-            throw new NotFoundException("Enter user's email!");
+        UserEntity owner = currentUserService.getCurrentUser();
+        EntityValidator.validateCurrentUser(owner);
+
+        RoomEntity existingRoom = getRoomById(roomId);
+
+        if (!existingRoom.getOwner().equals(owner)) {
+            throw new ForbiddenError("Access denied! Only owner can delete other users!");
         }
 
         UserEntity existingUser = userRepository.findByEmail(emailUserDto.getEmail());
 
         if (existingUser == null) {
-            throw new NotFoundException("User not found: " + emailUserDto.getEmail());
+            throw new NotFoundException("Deleted user not found: " + emailUserDto.getEmail());
         }
-
-        RoomEntity existingRoom = getRoomById(roomId);
 
         if (!existingRoom.getUsers().contains(existingUser)) {
             throw new NotFoundException("This guest not found in room");
@@ -195,22 +206,23 @@ public class RoomServiceImpl implements RoomService {
 
     @Transactional
     @Override
-    public void deleteRoomById(EmailUserDto emailUserDto, Long roomId) {
+    public void deleteRoomById(Long roomId) {
+        UserEntity owner = currentUserService.getCurrentUser();
+        EntityValidator.validateCurrentUser(owner);
+
         RoomEntity existingRoom = getRoomById(roomId);
 
-        UserEntity existingUser = userRepository.findByEmail(emailUserDto.getEmail());
+        if (!existingRoom.getOwner().equals(owner)) {
+            throw new ForbiddenError("Access denied!");
+        }
 
         if (existingRoom.getStatus().equals(Status.DELETED)) {
             throw new NotFoundException("This room is already deleted.");
         }
 
-        if (!existingRoom.getOwner().equals(existingUser)) {
-            throw new NotFoundException("Owner not found by email: " + emailUserDto.getEmail());
-        }
-
-        existingUser.getUserRooms().remove(existingRoom);
-        existingUser.getRooms().remove(existingRoom);
-        existingUser.setUpdated(new Date());
+        owner.getUserRooms().remove(existingRoom);
+        owner.getRooms().remove(existingRoom);
+        owner.setUpdated(new Date());
 
         existingRoom.setStatus(Status.DELETED);
         existingRoom.setUpdated(new Date());
@@ -220,36 +232,30 @@ public class RoomServiceImpl implements RoomService {
             mailSender.send(user.getEmail(), "Deleting a Room", message);
         });
 
-        userRepository.save(existingUser);
+        userRepository.save(owner);
         roomRepository.save(existingRoom);
     }
 
     @Transactional
     @Override
     public RoomEntity updateRoomById(RoomCreationDto roomCreationDto, Long roomId) {
-        RoomValidator.validateRoom(roomCreationDto);
+        UserEntity owner = currentUserService.getCurrentUser();
+        EntityValidator.validateCurrentUser(owner);
 
+        RoomValidator.validateRoom(roomCreationDto);
         RoomEntity updatingRoom = getRoomById(roomId);
 
-        if (!updatingRoom.getOwner().getEmail().equals(roomCreationDto.getOwner().getEmail())) {
-            throw new NotFoundException("Enter owner's email!");
+        if (!updatingRoom.getOwner().equals(owner)) {
+            throw new ForbiddenError("Access denied!");
         }
-
-        UserEntity existingUser = userRepository.findByEmail(roomCreationDto.getOwner().getEmail());
-
-        if (existingUser == null) {
-            throw new NotFoundException("User not found by email: " +
-                    roomCreationDto.getOwner().getEmail());
-        }
-
-        RoomValidator.validateStatus(updatingRoom);
 
         roomMapper.updateRoomEntityFromRoomDto(roomCreationDto, updatingRoom);
+        updatingRoom.setUpdated(new Date());
+        roomRepository.save(updatingRoom);
 
         String message = MessageGenerate.getMessageForUpdateRoom(updatingRoom);
-        mailSender.send(existingUser.getEmail(), "Updating Room", message);
+        mailSender.send(owner.getEmail(), "Updating Room", message);
 
-        updatingRoom.setUpdated(new Date());
-        return roomRepository.save(updatingRoom);
+        return updatingRoom;
     }
 }
