@@ -25,6 +25,12 @@ public class UserEntity extends BaseEntity {
     @Column
     private String password;
 
+    @Column(name = "total_amount")
+    private Double totalAmount;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<DebtEntity> debts;
+
     @Column(name = "activation_code")
     private String activationCode;
 
@@ -42,18 +48,4 @@ public class UserEntity extends BaseEntity {
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<RoleEntity> roles;
-
-    @Override
-    public String toString() {
-        return "UserEntity{" +
-                "email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                ", password='" + password + '\'' +
-                ", activationCode='" + activationCode + '\'' +
-                ", userRooms=" + userRooms +
-                ", rooms=" + rooms +
-                ", roles=" + roles +
-                '}';
-    }
 }

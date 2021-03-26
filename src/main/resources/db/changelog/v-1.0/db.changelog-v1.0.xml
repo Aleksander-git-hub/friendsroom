@@ -10,5 +10,6 @@
     <include file="20-changeset-user_roles-table.xml" relativeToChangelogFile="true"/>
     <include file="30-changeset-rooms-table.xml" relativeToChangelogFile="true"/>
     <include file="40-changeset-user_rooms-table.xml" relativeToChangelogFile="true"/>
+    <include file="50-changeset-debts-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -19,6 +19,9 @@ public class RoomEntity extends BaseEntity{
     @Column(name = "activation_code")
     private String activationCode;
 
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    private List<DebtEntity> debts;
+
     @ManyToOne
     private UserEntity owner;
 
