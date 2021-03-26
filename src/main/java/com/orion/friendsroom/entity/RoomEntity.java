@@ -16,6 +16,9 @@ public class RoomEntity extends BaseEntity{
     @Column
     private String name;
 
+    @Column(name = "total_amount")
+    private Double totalAmount;
+
     @Column(name = "activation_code")
     private String activationCode;
 

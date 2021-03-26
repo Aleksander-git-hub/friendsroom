@@ -54,10 +54,12 @@ public class MessageGenerate {
         return String.format(
                 "Hello, %s!\n" +
                         "Your Room was created! with id: %s.\n" +
+                        "Room's total amount: %s.\n" +
                         "Please, visit next link to confirm create room: %s\n " +
                         "http://localhost:8070/friends-room/api/v1/activate/room/%s",
                 room.getOwner().getFirstName(),
                 room.getId(),
+                room.getTotalAmount(),
                 room.getName(),
                 room.getActivationCode()
         );
@@ -94,10 +96,12 @@ public class MessageGenerate {
     public static String getMessageAddGuest(UserEntity user, RoomEntity room) {
         return String.format(
                 "Hello, %s!\n" +
-                        "User %s create a new Room: %s and invited you!\n" + "Welcome!",
+                        "User %s create a new Room: %s and invited you!\n" +
+                        "Your debt: %s",
                 user.getFirstName(),
                 room.getOwner().getEmail(),
-                room.getName()
+                room.getName(),
+                room.getTotalAmount()/room.getUsers().size()
         );
     }
 

@@ -1,6 +1,7 @@
 CREATE TABLE rooms(
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    total_amount DOUBLE PRECISION,
     created TIMESTAMP DEFAULT current_timestamp NOT NULL,
     updated TIMESTAMP DEFAULT current_timestamp NOT NULL,
     status VARCHAR(20) DEFAULT 'NOT_CONFIRMED' NOT NULL,

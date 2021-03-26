@@ -4,7 +4,7 @@ CREATE TABLE users(
     first_name VARCHAR(255) NOT NULL,
     second_name VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    total_amount DOUBLE PRECISION,
+    total_amount DOUBLE PRECISION NOT NULL,
     activation_code VARCHAR(255),
     created TIMESTAMP DEFAULT current_timestamp NOT NULL,
     updated TIMESTAMP DEFAULT current_timestamp NOT NULL,

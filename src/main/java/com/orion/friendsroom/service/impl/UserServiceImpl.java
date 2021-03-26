@@ -79,6 +79,8 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userMapper.toEntity(registerDto);
 
         MessageGenerate.setFields(userEntity, userRoles, roleUser);
+        userEntity.setDebts(new ArrayList<>());
+        userEntity.setTotalAmount(0D);
         userRepository.save(userEntity);
 
         String message = MessageGenerate.getMessageForUser(userEntity);

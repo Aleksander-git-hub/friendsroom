@@ -14,4 +14,7 @@ public class RoomCreationDto {
     @NotBlank
     private String name;
 
+    @NotBlank
+    private Double totalAmount;
+
 }

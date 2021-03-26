@@ -16,6 +16,8 @@ public class RoomDto {
 
     private String name;
 
+    private Double totalAmount;
+
     private EmailUserDto owner;
 
     private List<EmailUserDto> users;

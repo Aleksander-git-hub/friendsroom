@@ -1,5 +1,6 @@
 package com.orion.friendsroom.service;
 
+import com.orion.friendsroom.dto.room.RoomDto;
 import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
@@ -24,6 +25,8 @@ public interface RoomService {
     RoomEntity addGuestToRoom(EmailUserDto emailUserDto, Long roomId);
 
     RoomEntity deleteGuestFromRoom(EmailUserDto emailUserDto, Long roomId);
+
+    RoomEntity confirmationOfRoomCreation(Long roomId);
 
     void deleteRoomById(Long roomId);
 
