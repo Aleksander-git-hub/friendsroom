@@ -1,9 +1,6 @@
 package com.orion.friendsroom.service;
 
-import com.orion.friendsroom.entity.RoleEntity;
-import com.orion.friendsroom.entity.RoomEntity;
-import com.orion.friendsroom.entity.Status;
-import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.entity.*;
 
 import java.util.Date;
 import java.util.List;
@@ -120,6 +117,16 @@ public class MessageGenerate {
                 guest.getFirstName(),
                 room.getOwner().getFirstName(),
                 room.getTotalAmount() / (room.getUsers().size() - 1)
+        );
+    }
+
+    public static String getMessageDropDebtFromGuest(UserEntity guest, DebtEntity debt, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "Your debt: %s is closed by Room: %s\n",
+                guest.getFirstName(),
+                debt.getSum(),
+                room.getName()
         );
     }
 }

@@ -28,6 +28,8 @@ public interface RoomService {
 
     RoomEntity addAmountToRoom(AmountDto amountDto, Long roomId);
 
+    RoomEntity deleteDebtFromGuest(EmailUserDto emailUserDto, Long roomId);
+
     void deleteRoomById(Long roomId);
 
     RoomEntity updateRoomById(RoomCreationDto roomCreationDto, Long roomId);

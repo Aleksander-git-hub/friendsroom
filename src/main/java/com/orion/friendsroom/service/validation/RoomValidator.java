@@ -3,6 +3,8 @@ package com.orion.friendsroom.service.validation;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
+import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,6 +24,12 @@ public class RoomValidator {
     public static void validateListOfGuests(RoomEntity roomForConfirmation) {
         if (roomForConfirmation.getUsers().size() <= 1) {
             throw new NotFoundException("Not added any users");
+        }
+    }
+
+    public static void validateOwner(UserEntity owner, RoomEntity room) {
+        if (!room.getOwner().equals(owner)) {
+            throw new ForbiddenError("Access denied!");
         }
     }
 }

@@ -7,4 +7,6 @@ import com.orion.friendsroom.entity.UserEntity;
 public interface DebtService {
 
     DebtEntity createDept(UserEntity user, RoomEntity room);
+
+    DebtEntity deleteDebt(UserEntity guest, RoomEntity room);
 }

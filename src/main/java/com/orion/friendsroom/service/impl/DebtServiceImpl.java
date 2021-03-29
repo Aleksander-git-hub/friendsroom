@@ -32,6 +32,19 @@ public class DebtServiceImpl implements DebtService {
         return debt;
     }
 
+    @Transactional
+    @Override
+    public DebtEntity deleteDebt(UserEntity guest, RoomEntity room) {
+        DebtEntity debt = debtRepository.findByRoomAndUser(room, guest);
+        debt.setRoom(null);
+        debt.setUser(null);
+        debt.setStatus(Status.DELETED);
+        debt.setUpdated(new Date());
+        debtRepository.save(debt);
+
+        return debt;
+    }
+
     private Double debtCalculation(RoomEntity room) {
         return room.getTotalAmount()/(room.getUsers().size() - 1);
     }

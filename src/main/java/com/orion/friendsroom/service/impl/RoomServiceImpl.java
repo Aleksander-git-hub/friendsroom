@@ -1,9 +1,9 @@
 package com.orion.friendsroom.service.impl;
 
 import com.orion.friendsroom.dto.room.AmountDto;
-import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
+import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
@@ -137,10 +137,7 @@ public class RoomServiceImpl implements RoomService {
         RoomEntity existingRoom = getRoomById(roomId);
 
         RoomValidator.validateStatus(existingRoom);
-
-        if (!existingRoom.getOwner().equals(owner)) {
-            throw new ForbiddenError("Access denied! Only owner can add other users!");
-        }
+        RoomValidator.validateOwner(owner, existingRoom);
 
         UserEntity addedUser = userRepository.findByEmail(emailUserDto.getEmail());
 
@@ -182,10 +179,7 @@ public class RoomServiceImpl implements RoomService {
         EntityValidator.validateCurrentUser(owner);
 
         RoomEntity existingRoom = getRoomById(roomId);
-
-        if (!existingRoom.getOwner().equals(owner)) {
-            throw new ForbiddenError("Access denied! Only owner can delete other users!");
-        }
+        RoomValidator.validateOwner(owner, existingRoom);
 
         UserEntity existingUser = userRepository.findByEmail(emailUserDto.getEmail());
 
@@ -219,10 +213,7 @@ public class RoomServiceImpl implements RoomService {
 
         RoomValidator.validateStatus(room);
         RoomValidator.validateListOfGuests(room);
-
-        if (!room.getOwner().equals(owner)) {
-            throw new ForbiddenError("Access denied!");
-        }
+        RoomValidator.validateOwner(owner, room);
 
         room.setTotalAmount(amountDto.getTotalAmount());
 
@@ -247,6 +238,44 @@ public class RoomServiceImpl implements RoomService {
             String message = MessageGenerate.getMessageDebtForGuest(guest, room);
             mailSender.send(guest.getEmail(), "New Debt", message);
         }
+
+        return room;
+    }
+
+    @Transactional
+    @Override
+    public RoomEntity deleteDebtFromGuest(EmailUserDto emailUserDto, Long roomId) {
+        UserEntity owner = currentUserService.getCurrentUser();
+        RoomEntity room = getRoomById(roomId);
+
+        RoomValidator.validateOwner(owner, room);
+
+        if (StringUtils.isEmpty(emailUserDto.getEmail())) {
+            throw new NotFoundException("Field is empty!");
+        }
+
+        UserEntity guest = userRepository.findByEmail(emailUserDto.getEmail());
+
+        if (guest == null ||
+            !room.getUsers().contains(guest)) {
+            throw new NotFoundException("User not found with email: " +
+                    emailUserDto.getEmail());
+        }
+
+        DebtEntity debt = debtService.deleteDebt(guest, room);
+
+        room.getDebts().remove(debt);
+        room.setUpdated(new Date());
+
+        guest.setTotalAmount(guest.getTotalAmount() - debt.getSum());
+        guest.getDebts().remove(debt);
+        guest.setUpdated(new Date());
+
+        String message = MessageGenerate.getMessageDropDebtFromGuest(guest, debt, room);
+        mailSender.send(guest.getEmail(), "Debt Closed", message);
+
+        userRepository.save(guest);
+        roomRepository.save(room);
 
         return room;
     }
