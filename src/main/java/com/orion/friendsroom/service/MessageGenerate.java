@@ -96,12 +96,10 @@ public class MessageGenerate {
     public static String getMessageAddGuest(UserEntity user, RoomEntity room) {
         return String.format(
                 "Hello, %s!\n" +
-                        "User %s create a new Room: %s and invited you!\n" +
-                        "Your debt: %s",
+                        "User %s create a new Room: %s and invited you!\n",
                 user.getFirstName(),
                 room.getOwner().getEmail(),
-                room.getName(),
-                room.getTotalAmount()/room.getUsers().size()
+                room.getName()
         );
     }
 
@@ -111,6 +109,17 @@ public class MessageGenerate {
                         "You are expelled from the Room: %s",
                 user.getFirstName(),
                 room.getName()
+        );
+    }
+
+    public static String getMessageDebtForGuest(UserEntity guest, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "You own the owner of the Room: %s.\n" +
+                        "Your debt: %s.",
+                guest.getFirstName(),
+                room.getOwner().getFirstName(),
+                room.getTotalAmount() / (room.getUsers().size() - 1)
         );
     }
 }

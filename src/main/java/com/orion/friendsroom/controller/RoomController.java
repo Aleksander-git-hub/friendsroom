@@ -1,5 +1,6 @@
 package com.orion.friendsroom.controller;
 
+import com.orion.friendsroom.dto.room.AmountDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
@@ -73,9 +74,10 @@ public class RoomController {
         return roomMapper.toDto(roomService.deleteGuestFromRoom(emailUserDto, roomId));
     }
 
-    @PostMapping(value = "/room-confirmation/{roomId}")
-    public RoomDto confirmationOfRoomCreation(@PathVariable Long roomId) {
-        return roomMapper.toDto(roomService.confirmationOfRoomCreation(roomId));
+    @PostMapping(value = "/add-amount/{roomId}")
+    public RoomDto addAmountToRoom(@RequestBody AmountDto amountDto,
+                                     @PathVariable Long roomId) {
+        return roomMapper.toDto(roomService.addAmountToRoom(amountDto, roomId));
     }
 
 

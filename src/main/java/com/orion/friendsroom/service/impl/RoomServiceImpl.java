@@ -1,6 +1,6 @@
 package com.orion.friendsroom.service.impl;
 
-import com.orion.friendsroom.dto.room.RoomDto;
+import com.orion.friendsroom.dto.room.AmountDto;
 import com.orion.friendsroom.dto.user.EmailUserDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
@@ -12,10 +12,10 @@ import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.mapper.RoomMapper;
-import com.orion.friendsroom.repository.DebtRepository;
 import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.service.CurrentUserService;
+import com.orion.friendsroom.service.DebtService;
 import com.orion.friendsroom.service.MessageGenerate;
 import com.orion.friendsroom.service.RoomService;
 import com.orion.friendsroom.service.validation.EntityValidator;
@@ -41,7 +41,7 @@ public class RoomServiceImpl implements RoomService {
     private UserRepository userRepository;
 
     @Autowired
-    private DebtRepository debtRepository;
+    private DebtService debtService;
 
     @Autowired
     private RoomMapper roomMapper;
@@ -65,7 +65,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         RoomEntity creationRoom = roomMapper.toEntity(roomCreationDto);
-        creationRoom.setTotalAmount(roomCreationDto.getTotalAmount());
+        creationRoom.setTotalAmount(0D);
         creationRoom.setCreated(new Date());
         creationRoom.setUpdated(creationRoom.getCreated());
         creationRoom.setStatus(Status.NOT_CONFIRMED);
@@ -162,6 +162,9 @@ public class RoomServiceImpl implements RoomService {
         existingRoom.setUpdated(new Date());
         roomRepository.save(existingRoom);
 
+        String message = MessageGenerate.getMessageAddGuest(addedUser, existingRoom);
+        mailSender.send(addedUser.getEmail(), "Adding to the Room", message);
+
         return existingRoom;
     }
 
@@ -210,46 +213,42 @@ public class RoomServiceImpl implements RoomService {
 
     @Transactional
     @Override
-    public RoomEntity confirmationOfRoomCreation(Long roomId) {
+    public RoomEntity addAmountToRoom(AmountDto amountDto, Long roomId) {
         UserEntity owner = currentUserService.getCurrentUser();
         RoomEntity room = getRoomById(roomId);
 
-        RoomValidator.validateConfirmation(room);
         RoomValidator.validateStatus(room);
+        RoomValidator.validateListOfGuests(room);
 
         if (!room.getOwner().equals(owner)) {
             throw new ForbiddenError("Access denied!");
         }
 
+        room.setTotalAmount(amountDto.getTotalAmount());
+
         List<UserEntity> usersInRoom = room.getUsers();
 
         for (int i = 0; i < usersInRoom.size(); i++) {
-            UserEntity user = usersInRoom.get(i);
-            DebtEntity debt = createDept(user, room);
-            user.getDebts().add(debt);
-            user.setTotalAmount(user.getTotalAmount() + debt.getSum());
-            user.setUpdated(new Date());
-            userRepository.save(user);
+            UserEntity guest = usersInRoom.get(i);
+
+            if (room.getOwner().equals(guest)) {
+                continue;
+            }
+
+            DebtEntity debt = debtService.createDept(guest, room);
+            guest.getDebts().add(debt);
+            guest.setTotalAmount(guest.getTotalAmount() + debt.getSum());
+            guest.setUpdated(new Date());
+            userRepository.save(guest);
             room.getDebts().add(debt);
+            room.setUpdated(new Date());
             roomRepository.save(room);
 
-            String message = MessageGenerate.getMessageAddGuest(user, room);
-            mailSender.send(user.getEmail(), "Welcome to Room", message);
+            String message = MessageGenerate.getMessageDebtForGuest(guest, room);
+            mailSender.send(guest.getEmail(), "New Debt", message);
         }
 
         return room;
-    }
-
-    private DebtEntity createDept(UserEntity user, RoomEntity room) {
-        DebtEntity debt = new DebtEntity();
-        debt.setCreated(new Date());
-        debt.setUpdated(debt.getCreated());
-        debt.setStatus(Status.ACTIVE);
-        debt.setUser(user);
-        debt.setRoom(room);
-        debt.setSum(room.getTotalAmount()/room.getUsers().size());
-        debtRepository.save(debt);
-        return debt;
     }
 
     @Transactional
