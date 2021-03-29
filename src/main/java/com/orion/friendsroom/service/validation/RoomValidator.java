@@ -32,4 +32,12 @@ public class RoomValidator {
             throw new ForbiddenError("Access denied!");
         }
     }
+
+    public static void validateRoomBeforeDeleting(RoomEntity room) {
+        room.getDebts().forEach(debt -> {
+            if (debt.getStatus().equals(Status.ACTIVE)) {
+                throw new NotFoundException("There is an ACTIVE debt! Deletion is not possible!");
+            }
+        });
+    }
 }

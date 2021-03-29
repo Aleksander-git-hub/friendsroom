@@ -287,6 +287,7 @@ public class RoomServiceImpl implements RoomService {
         EntityValidator.validateCurrentUser(owner);
 
         RoomEntity existingRoom = getRoomById(roomId);
+        RoomValidator.validateRoomBeforeDeleting(existingRoom);
 
         if (!existingRoom.getOwner().equals(owner)) {
             throw new ForbiddenError("Access denied!");

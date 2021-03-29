@@ -80,12 +80,11 @@ public class RoomController {
         return roomMapper.toDto(roomService.addAmountToRoom(amountDto, roomId));
     }
 
-    @DeleteMapping(value = "/drop-debt/{roomId}")
+    @DeleteMapping(value = "/delete-debt/{roomId}")
     public RoomDto deleteDebtFromGuest(@RequestBody EmailUserDto emailUserDto,
                                       @PathVariable Long roomId) {
         return roomMapper.toDto(roomService.deleteDebtFromGuest(emailUserDto, roomId));
     }
-
 
     @DeleteMapping(value = "/delete-room/{roomId}")
     public ResponseEntity<?> deleteRoomById(@PathVariable Long roomId) {
