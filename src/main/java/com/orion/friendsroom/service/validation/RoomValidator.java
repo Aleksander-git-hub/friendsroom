@@ -1,5 +1,6 @@
 package com.orion.friendsroom.service.validation;
 
+import com.orion.friendsroom.dto.room.AmountDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
@@ -39,5 +40,15 @@ public class RoomValidator {
                 throw new NotFoundException("There is an ACTIVE debt! Deletion is not possible!");
             }
         });
+    }
+
+    public static void validateTotalAmount(AmountDto amountDto) {
+        if (amountDto.getTotalAmount() == null) {
+            throw new NotFoundException("Enter total amount!");
+        }
+
+        if (amountDto.getTotalAmount() <= 0) {
+            throw new NotFoundException("The Amount is incorrect!");
+        }
     }
 }

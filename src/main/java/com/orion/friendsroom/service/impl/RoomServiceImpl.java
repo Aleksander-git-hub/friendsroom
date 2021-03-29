@@ -211,6 +211,7 @@ public class RoomServiceImpl implements RoomService {
         UserEntity owner = currentUserService.getCurrentUser();
         RoomEntity room = getRoomById(roomId);
 
+        RoomValidator.validateTotalAmount(amountDto);
         RoomValidator.validateStatus(room);
         RoomValidator.validateListOfGuests(room);
         RoomValidator.validateOwner(owner, room);
