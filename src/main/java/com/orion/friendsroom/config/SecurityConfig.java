@@ -1,5 +1,7 @@
 package com.orion.friendsroom.config;
 
+import com.orion.friendsroom.exceptions.CustomAccessDeniedHandler;
+import com.orion.friendsroom.exceptions.CustomAuthenticationEntryPoint;
 import com.orion.friendsroom.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
                 .antMatchers("/api/v1/auth/**").hasRole("USER")
                 .anyRequest().authenticated()
+                .and()
+                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .logout()
                 .and()

@@ -12,33 +12,30 @@ import java.util.Date;
 public class CustomExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handleNotFoundException
-            (NotFoundException exception, WebRequest request) {
+    public ResponseEntity<?> handleNotFoundException(NotFoundException exception) {
         ErrorDetails errorDetails =
-                new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+                new ErrorDetails(new Date(), exception.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(JwtAuthenticationException.class)
-    public ResponseEntity<?> handleJwtAuthenticationException
-            (NotFoundException exception, WebRequest request) {
+    public ResponseEntity<?> handleJwtAuthenticationException(JwtAuthenticationException exception) {
         ErrorDetails errorDetails =
-                new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+                new ErrorDetails(new Date(), exception.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(ForbiddenError.class)
-    public ResponseEntity<?> handleForbiddenError
-            (NotFoundException exception, WebRequest request) {
+    public ResponseEntity<?> handleForbiddenError(ForbiddenError exception) {
         ErrorDetails errorDetails =
-                new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(false));
+                new ErrorDetails(new Date(), exception.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
-    public ResponseEntity<?> globalExceptionHandling
-            (Exception exception, WebRequest request) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> globalExceptionHandling(Exception exception) {
         ErrorDetails errorDetails =
-                new ErrorDetails(new Date(), exception.getMessage(), request.getDescription(true));
+                new ErrorDetails(new Date(), exception.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
