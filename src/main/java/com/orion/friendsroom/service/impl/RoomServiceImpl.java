@@ -265,11 +265,9 @@ public class RoomServiceImpl implements RoomService {
 
         DebtEntity debt = debtService.deleteDebt(guest, room);
 
-        room.getDebts().remove(debt);
         room.setUpdated(new Date());
 
         guest.setTotalAmount(guest.getTotalAmount() - debt.getSum());
-        guest.getDebts().remove(debt);
         guest.setUpdated(new Date());
 
         String message = MessageGenerate.getMessageDropDebtFromGuest(guest, debt, room);

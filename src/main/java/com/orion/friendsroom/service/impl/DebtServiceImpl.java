@@ -4,6 +4,7 @@ import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.repository.DebtRepository;
 import com.orion.friendsroom.service.DebtService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,11 @@ public class DebtServiceImpl implements DebtService {
     @Override
     public DebtEntity deleteDebt(UserEntity guest, RoomEntity room) {
         DebtEntity debt = debtRepository.findByRoomAndUser(room, guest);
-        debt.setRoom(null);
-        debt.setUser(null);
+
+        if (debt == null) {
+            throw new NotFoundException("Debt not found!");
+        }
+
         debt.setStatus(Status.DELETED);
         debt.setUpdated(new Date());
         debtRepository.save(debt);

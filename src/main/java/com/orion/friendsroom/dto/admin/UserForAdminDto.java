@@ -20,6 +20,8 @@ public class UserForAdminDto {
 
     private String secondName;
 
+    private Double totalAmount;
+
     private Date created;
 
     private Date updated;
