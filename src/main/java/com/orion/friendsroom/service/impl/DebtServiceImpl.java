@@ -1,5 +1,6 @@
 package com.orion.friendsroom.service.impl;
 
+import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
@@ -9,6 +10,7 @@ import com.orion.friendsroom.repository.DebtRepository;
 import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.service.DebtService;
+import com.orion.friendsroom.service.MessageGenerate;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,9 @@ public class DebtServiceImpl implements DebtService {
     @Autowired
     private RoomServiceImpl roomService;
 
+    @Autowired
+    private MailSender mailSender;
+
     private Boolean isFromRepayDebt = false;
 
     @Transactional
@@ -38,9 +43,9 @@ public class DebtServiceImpl implements DebtService {
     public DebtEntity createDept(UserEntity guest, RoomEntity room,
                                  Double amount, UserEntity ownerOfMoney) {
         DebtEntity debt = debtRepository
-                .findByRoomAndUserAndWhoOwesMoney(room, guest, ownerOfMoney);
+                .findByRoomAndUserAndWhoOwesMoneyAndStatus(room, guest, ownerOfMoney, Status.ACTIVE);
 
-        if (debt == null) {
+        if (debt == null || debt.getStatus().equals(Status.DELETED)) {
             debt = new DebtEntity();
             debt.setCreated(new Date());
             debt.setUpdated(debt.getCreated());
@@ -73,7 +78,7 @@ public class DebtServiceImpl implements DebtService {
     @Override
     public DebtEntity repayDebt(UserEntity guest, RoomEntity room, Double amount, UserEntity ownerOfMoney) {
         DebtEntity debt = debtRepository
-                .findByRoomAndUserAndWhoOwesMoney(room, guest, ownerOfMoney);
+                .findByRoomAndUserAndWhoOwesMoneyAndStatus(room, guest, ownerOfMoney, Status.ACTIVE);
 
         if (debt == null) {
             throw new NotFoundException("Debt not found!");
@@ -90,7 +95,9 @@ public class DebtServiceImpl implements DebtService {
                     (debt.getSum() - amount) * (-1), 2);
             isFromRepayDebt = true;
             DebtEntity reverseDebt = createDept(ownerOfMoney, room, reverseAmount, guest);
-            roomService.checkingDebt(ownerOfMoney, room, guest, reverseAmount, reverseDebt);
+            roomService.checkingDebt(ownerOfMoney, room, reverseDebt);
+            String message = MessageGenerate.getMessageAboutOverpayment(ownerOfMoney, reverseDebt, room);
+            mailSender.send(ownerOfMoney.getEmail(), "Overpayment", message);
         }
 
         debt.setUpdated(new Date());

@@ -232,15 +232,22 @@ public class RoomServiceImpl implements RoomService {
             DebtEntity debt = debtService.createDept(guest, room,
                     amountDto.getTotalAmount(), currentUser);
 
-            checkingDebt(guest, room, currentUser, amountDto.getTotalAmount(), debt);
+            checkingDebt(guest, room, debt);
+
+            String message = MessageGenerate.getMessageDebtForGuest(
+                    guest,
+                    room,
+                    currentUser,
+                    amountDto.getTotalAmount()
+            );
+            mailSender.send(guest.getEmail(), "New Debt", message);
         }
 
         return room;
     }
 
     @Transactional
-    public void checkingDebt(UserEntity guest, RoomEntity room, UserEntity currentUser,
-             Double totalAmount, DebtEntity debt) {
+    public void checkingDebt(UserEntity guest, RoomEntity room, DebtEntity debt) {
         if (debt != null) {
             guest.getDebts().add(debt);
             guest.setTotalAmount((guest.getTotalAmount() + debt.getSum()));
@@ -250,14 +257,6 @@ public class RoomServiceImpl implements RoomService {
             room.setUpdated(new Date());
             roomRepository.save(room);
         }
-
-        String message = MessageGenerate.getMessageDebtForGuest(
-                guest,
-                room,
-                currentUser,
-                totalAmount
-        );
-        mailSender.send(guest.getEmail(), "New Debt", message);
     }
 
     @Transactional

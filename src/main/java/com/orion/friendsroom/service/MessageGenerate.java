@@ -166,4 +166,16 @@ public class MessageGenerate {
                 room.getName()
         );
     }
+
+    public static String getMessageAboutOverpayment(UserEntity debtor, DebtEntity debt, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "%s closed your debt with overpayment in Room: %s\n" +
+                        "Your debt: %s",
+                debtor.getFirstName(),
+                debt.getWhoOwesMoney().getEmail(),
+                room.getName(),
+                debt.getSum()
+        );
+    }
 }
