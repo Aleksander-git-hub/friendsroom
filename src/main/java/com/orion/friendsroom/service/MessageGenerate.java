@@ -126,10 +126,34 @@ public class MessageGenerate {
     public static String getMessageDropDebtFromGuest(UserEntity guest, DebtEntity debt, RoomEntity room) {
         return String.format(
                 "Hello, %s!\n" +
-                        "Your debt: %s is closed by Room: %s\n",
+                        "Your debt to %s is closed by Room: %s\n",
                 guest.getFirstName(),
-                debt.getSum(),
+                debt.getWhoOwesMoney().getEmail(),
                 room.getName()
+        );
+    }
+
+    public static String getMessagePartialDebtClosure(UserEntity currentUser, DebtEntity debt, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "Your debt is partially closed to %s by Room: %s\n" +
+                        "Debt left: %s",
+                currentUser.getFirstName(),
+                debt.getWhoOwesMoney().getEmail(),
+                room.getName(),
+                debt.getSum()
+        );
+    }
+
+    public static String getMessageWhomOwnsMoney(UserEntity currentUser, DebtEntity debt, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "%s partially closed the debt by Room: %s\n" +
+                        "Debt left: %s",
+                debt.getWhoOwesMoney().getFirstName(),
+                currentUser.getEmail(),
+                room.getName(),
+                debt.getSum()
         );
     }
 }

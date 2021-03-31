@@ -1,5 +1,6 @@
 package com.orion.friendsroom.service.impl;
 
+import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
@@ -34,7 +35,6 @@ public class DebtServiceImpl implements DebtService {
     @Override
     public DebtEntity createDept(UserEntity guest, RoomEntity room,
                                  Double amount, UserEntity ownerOfMoney) {
-
         DebtEntity debt = debtRepository
                 .findByRoomAndUserAndWhoOwesMoney(room, guest, ownerOfMoney);
 
@@ -54,7 +54,8 @@ public class DebtServiceImpl implements DebtService {
         debt.setSum(debt.getSum() + debtCalculation(room, amount));
         debt.setUpdated(new Date());
         debtRepository.save(debt);
-        guest.setTotalAmount(guest.getTotalAmount() + debtCalculation(room, amount));
+        guest.setTotalAmount(guest.getTotalAmount() +
+                debtCalculation(room, amount));
         guest.setUpdated(new Date());
         userRepository.save(guest);
         room.setUpdated(new Date());
@@ -73,10 +74,15 @@ public class DebtServiceImpl implements DebtService {
             throw new NotFoundException("Debt not found!");
         }
 
+        if (debt.getStatus().equals(Status.DELETED)) {
+            throw new NotFoundException("The Debt closed!");
+        }
+
         int result = deductionOfDebt(debt, amount);
 
         if (result == -1) {
             Double reverseAmount = (debt.getSum() - amount) * (-1);
+            debtCalculation(room, reverseAmount);
             DebtEntity reverseDebt = createDept(ownerOfMoney, room, reverseAmount, guest);
 
             roomService.checkingDebt(ownerOfMoney, room, guest, reverseAmount, reverseDebt);
