@@ -99,7 +99,9 @@ public class DebtServiceImpl implements DebtService {
     }
 
     private int deductionOfDebt(DebtEntity debt, Double amount) {
-        Double totalDebt = debt.getSum();
+        Double totalDebt = Precision.round(
+                (debt.getSum()), 2
+        );
 
         if ((totalDebt - amount) == Precision.round(0D, 2)) {
             debt.setStatus(Status.DELETED);
@@ -107,7 +109,7 @@ public class DebtServiceImpl implements DebtService {
         }
 
         if ((totalDebt - amount) > Precision.round(0D, 2)) {
-            debt.setSum(totalDebt - amount);
+            debt.setSum(Precision.round((totalDebt - amount), 2));
             return 1;
         }
 

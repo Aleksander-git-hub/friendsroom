@@ -285,7 +285,9 @@ public class RoomServiceImpl implements RoomService {
 
         room.setUpdated(new Date());
 
-        currentUser.setTotalAmount(currentUser.getTotalAmount() - debt.getSum()); // check this
+        currentUser.setTotalAmount(Precision.round(
+                (currentUser.getTotalAmount() - repayDebtDto.getAmount()), 2)
+        );
         currentUser.setUpdated(new Date());
 
         userRepository.save(currentUser);
