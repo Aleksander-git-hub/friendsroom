@@ -156,4 +156,14 @@ public class MessageGenerate {
                 debt.getSum()
         );
     }
+
+    public static String getMessageForDropDebtToOwner(UserEntity currentUser, DebtEntity debt, RoomEntity room) {
+        return String.format(
+                "Hello, %s!\n" +
+                        "%s closed your debt by Room: %s\n",
+                debt.getWhoOwesMoney().getFirstName(),
+                currentUser.getEmail(),
+                room.getName()
+        );
+    }
 }

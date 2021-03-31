@@ -48,16 +48,19 @@ public class DebtServiceImpl implements DebtService {
             debt.setUser(guest);
             debt.setRoom(room);
             debt.setWhoOwesMoney(ownerOfMoney);
-            debt.setSum(debtCalculation(room, amount, isFromRepayDebt));
+            debt.setSum(Precision.round((debtCalculation(room, amount, isFromRepayDebt)), 2));
             debtRepository.save(debt);
             return debt;
         }
 
-        debt.setSum(debt.getSum() + (debtCalculation(room, amount, isFromRepayDebt)));
+        debt.setSum(Precision.round(
+                (debt.getSum() + (debtCalculation(room, amount, isFromRepayDebt))), 2)
+        );
         debt.setUpdated(new Date());
         debtRepository.save(debt);
-        guest.setTotalAmount(guest.getTotalAmount() +
-                (debtCalculation(room, amount, isFromRepayDebt)));
+        guest.setTotalAmount(Precision.round(
+                (guest.getTotalAmount() + debtCalculation(room, amount, isFromRepayDebt)), 2)
+        );
         guest.setUpdated(new Date());
         userRepository.save(guest);
         room.setUpdated(new Date());
@@ -83,7 +86,8 @@ public class DebtServiceImpl implements DebtService {
         int result = deductionOfDebt(debt, amount);
 
         if (result == -1) {
-            Double reverseAmount = (debt.getSum() - amount) * (-1);
+            Double reverseAmount = Precision.round(
+                    (debt.getSum() - amount) * (-1), 2);
             isFromRepayDebt = true;
             DebtEntity reverseDebt = createDept(ownerOfMoney, room, reverseAmount, guest);
             roomService.checkingDebt(ownerOfMoney, room, guest, reverseAmount, reverseDebt);

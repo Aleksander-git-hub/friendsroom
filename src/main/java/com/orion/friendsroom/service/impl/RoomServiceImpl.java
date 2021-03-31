@@ -297,20 +297,21 @@ public class RoomServiceImpl implements RoomService {
     }
 
     private void sendMessageRepayDebt(UserEntity currentUser, DebtEntity debt, RoomEntity room) {
-        String messageForDebtors = null;
+        String messageForDebtors;
+        String messageForOwner;
 
         if (debt.getStatus().equals(Status.DELETED)) {
             messageForDebtors = MessageGenerate.getMessageDropDebtFromGuest(currentUser, debt, room);
-        }
-
-        if (debt.getSum() >= 0) {
+            messageForOwner = MessageGenerate.getMessageForDropDebtToOwner(currentUser, debt, room);
+            mailSender.send(currentUser.getEmail(), "Repay Debt", messageForDebtors);
+            mailSender.send(debt.getWhoOwesMoney().getEmail(), "Debt Closed", messageForOwner);
+        } else {
             messageForDebtors = MessageGenerate.getMessagePartialDebtClosure(currentUser, debt, room);
-            String messageForOwner = MessageGenerate
+            messageForOwner = MessageGenerate
                     .getMessageWhomOwnsMoney(currentUser, debt, room);
             mailSender.send(debt.getWhoOwesMoney().getEmail(), "Partially closure debt", messageForOwner);
+            mailSender.send(currentUser.getEmail(), "Partially closure debt", messageForDebtors);
         }
-
-        mailSender.send(currentUser.getEmail(), "Repay Debt", messageForDebtors);
     }
 
     @Transactional
