@@ -22,6 +22,7 @@ import com.orion.friendsroom.service.RoomService;
 import com.orion.friendsroom.service.validation.EntityValidator;
 import com.orion.friendsroom.service.validation.RoomValidator;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -238,12 +239,11 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Transactional
-    public void checkingDebt
-            (UserEntity guest, RoomEntity room, UserEntity currentUser,
+    public void checkingDebt(UserEntity guest, RoomEntity room, UserEntity currentUser,
              Double totalAmount, DebtEntity debt) {
         if (debt != null) {
             guest.getDebts().add(debt);
-            guest.setTotalAmount(guest.getTotalAmount() + debt.getSum());
+            guest.setTotalAmount((guest.getTotalAmount() + debt.getSum()));
             guest.setUpdated(new Date());
             userRepository.save(guest);
             room.getDebts().add(debt);
@@ -281,11 +281,11 @@ public class RoomServiceImpl implements RoomService {
                     repayDebtDto.getToWhom());
         }
 
-        DebtEntity debt = debtService.deleteDebt(currentUser, room, repayDebtDto.getAmount(), ownerOfMoney);
+        DebtEntity debt = debtService.repayDebt(currentUser, room, repayDebtDto.getAmount(), ownerOfMoney);
 
         room.setUpdated(new Date());
 
-        currentUser.setTotalAmount(currentUser.getTotalAmount() - debt.getSum());
+        currentUser.setTotalAmount(currentUser.getTotalAmount() - debt.getSum()); // check this
         currentUser.setUpdated(new Date());
 
         userRepository.save(currentUser);
@@ -299,7 +299,7 @@ public class RoomServiceImpl implements RoomService {
     private void sendMessageRepayDebt(UserEntity currentUser, DebtEntity debt, RoomEntity room) {
         String messageForDebtors = null;
 
-        if (debt.getSum() == 0) {
+        if (debt.getStatus().equals(Status.DELETED)) {
             messageForDebtors = MessageGenerate.getMessageDropDebtFromGuest(currentUser, debt, room);
         }
 

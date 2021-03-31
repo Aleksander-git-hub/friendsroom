@@ -1,6 +1,5 @@
 package com.orion.friendsroom.service.impl;
 
-import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.Status;
@@ -10,6 +9,7 @@ import com.orion.friendsroom.repository.DebtRepository;
 import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
 import com.orion.friendsroom.service.DebtService;
+import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,8 @@ public class DebtServiceImpl implements DebtService {
     @Autowired
     private RoomServiceImpl roomService;
 
+    private Boolean isFromRepayDebt = false;
+
     @Transactional
     @Override
     public DebtEntity createDept(UserEntity guest, RoomEntity room,
@@ -46,16 +48,16 @@ public class DebtServiceImpl implements DebtService {
             debt.setUser(guest);
             debt.setRoom(room);
             debt.setWhoOwesMoney(ownerOfMoney);
-            debt.setSum(debtCalculation(room, amount));
+            debt.setSum(debtCalculation(room, amount, isFromRepayDebt));
             debtRepository.save(debt);
             return debt;
         }
 
-        debt.setSum(debt.getSum() + debtCalculation(room, amount));
+        debt.setSum(debt.getSum() + (debtCalculation(room, amount, isFromRepayDebt)));
         debt.setUpdated(new Date());
         debtRepository.save(debt);
         guest.setTotalAmount(guest.getTotalAmount() +
-                debtCalculation(room, amount));
+                (debtCalculation(room, amount, isFromRepayDebt)));
         guest.setUpdated(new Date());
         userRepository.save(guest);
         room.setUpdated(new Date());
@@ -66,7 +68,7 @@ public class DebtServiceImpl implements DebtService {
 
     @Transactional
     @Override
-    public DebtEntity deleteDebt(UserEntity guest, RoomEntity room, Double amount, UserEntity ownerOfMoney) {
+    public DebtEntity repayDebt(UserEntity guest, RoomEntity room, Double amount, UserEntity ownerOfMoney) {
         DebtEntity debt = debtRepository
                 .findByRoomAndUserAndWhoOwesMoney(room, guest, ownerOfMoney);
 
@@ -82,9 +84,8 @@ public class DebtServiceImpl implements DebtService {
 
         if (result == -1) {
             Double reverseAmount = (debt.getSum() - amount) * (-1);
-            debtCalculation(room, reverseAmount);
+            isFromRepayDebt = true;
             DebtEntity reverseDebt = createDept(ownerOfMoney, room, reverseAmount, guest);
-
             roomService.checkingDebt(ownerOfMoney, room, guest, reverseAmount, reverseDebt);
         }
 
@@ -96,12 +97,12 @@ public class DebtServiceImpl implements DebtService {
     private int deductionOfDebt(DebtEntity debt, Double amount) {
         Double totalDebt = debt.getSum();
 
-        if ((totalDebt - amount) == 0) {
+        if ((totalDebt - amount) == Precision.round(0D, 2)) {
             debt.setStatus(Status.DELETED);
             return 0;
         }
 
-        if ((totalDebt - amount) > 0) {
+        if ((totalDebt - amount) > Precision.round(0D, 2)) {
             debt.setSum(totalDebt - amount);
             return 1;
         }
@@ -110,7 +111,10 @@ public class DebtServiceImpl implements DebtService {
         return -1;
     }
 
-    private Double debtCalculation(RoomEntity room, Double amount) {
-        return amount/room.getUsers().size();
+    private Double debtCalculation(RoomEntity room, Double amount, Boolean isFromRepayDebt) {
+        if (isFromRepayDebt) {
+            return amount;
+        }
+        return Precision.round((amount/room.getUsers().size()), 2);
     }
 }

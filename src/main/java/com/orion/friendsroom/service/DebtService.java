@@ -8,5 +8,5 @@ public interface DebtService {
 
     DebtEntity createDept(UserEntity user, RoomEntity room, Double amount, UserEntity ownerOfMoney);
 
-    DebtEntity deleteDebt(UserEntity guest, RoomEntity room, Double amount, UserEntity ownerOfMoney);
+    DebtEntity repayDebt(UserEntity guest, RoomEntity room, Double amount, UserEntity ownerOfMoney);
 }
