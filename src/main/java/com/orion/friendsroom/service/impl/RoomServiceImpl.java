@@ -271,7 +271,10 @@ public class RoomServiceImpl implements RoomService {
         if (StringUtils.isEmpty(repayDebtDto.getToWhom())) {
             throw new NotFoundException("Enter who to repay the Debt.");
         }
-        RoomValidator.validateTotalAmount(repayDebtDto.getAmount());
+        Double amount = Precision.round(
+                (repayDebtDto.getAmount()), 2
+        );
+        RoomValidator.validateTotalAmount(amount);
 
         UserEntity ownerOfMoney = userRepository.findByEmail(repayDebtDto.getToWhom());
 
@@ -281,13 +284,22 @@ public class RoomServiceImpl implements RoomService {
                     repayDebtDto.getToWhom());
         }
 
-        DebtEntity debt = debtService.repayDebt(currentUser, room, repayDebtDto.getAmount(), ownerOfMoney);
+        DebtEntity debt = debtService.repayDebt(currentUser, room, amount, ownerOfMoney);
 
         room.setUpdated(new Date());
 
-        currentUser.setTotalAmount(Precision.round(
-                (currentUser.getTotalAmount() - repayDebtDto.getAmount()), 2)
+        Double interimAmount = Precision.round(
+                (currentUser.getTotalAmount()), 2
         );
+
+        if ((interimAmount - amount) >= Precision.round(0D, 2)) {
+            currentUser.setTotalAmount(Precision.round(
+                    (interimAmount - repayDebtDto.getAmount()), 2)
+            );
+        } else {
+            currentUser.setTotalAmount(0D);
+        }
+
         currentUser.setUpdated(new Date());
 
         userRepository.save(currentUser);
