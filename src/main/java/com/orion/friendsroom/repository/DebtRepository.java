@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DebtRepository extends JpaRepository<DebtEntity, Long> {
 
-    DebtEntity findByRoomAndUser(RoomEntity roomEntity, UserEntity userEntity);
+    DebtEntity findByRoomAndUserAndWhoOwesMoney(RoomEntity room, UserEntity debtor, UserEntity whoOwes);
 }

@@ -4,6 +4,7 @@ import com.orion.friendsroom.dto.room.AmountDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.dto.user.EmailUserDto;
+import com.orion.friendsroom.dto.user.RepayDebtDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 
@@ -28,7 +29,7 @@ public interface RoomService {
 
     RoomEntity addAmountToRoom(AmountDto amountDto, Long roomId);
 
-    RoomEntity deleteDebtFromGuest(EmailUserDto emailUserDto, Long roomId);
+    RoomEntity repayDebtToUser(RepayDebtDto repayDebtDto, Long roomId);
 
     void deleteRoomById(Long roomId);
 

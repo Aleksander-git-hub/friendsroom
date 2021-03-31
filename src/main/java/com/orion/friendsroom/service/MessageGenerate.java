@@ -1,6 +1,7 @@
 package com.orion.friendsroom.service;
 
 import com.orion.friendsroom.entity.*;
+import org.apache.commons.math3.util.Precision;
 
 import java.util.Date;
 import java.util.List;
@@ -109,14 +110,16 @@ public class MessageGenerate {
         );
     }
 
-    public static String getMessageDebtForGuest(UserEntity guest, RoomEntity room) {
+    public static String getMessageDebtForGuest(UserEntity guest, RoomEntity room,
+                                                UserEntity currentUser, Double totalAmount) {
         return String.format(
                 "Hello, %s!\n" +
-                        "You own the owner of the Room: %s.\n" +
-                        "Your debt: %s.",
+                        "You own to user: %s.\n" +
+                        "Your debt: %s. Room: %s",
                 guest.getFirstName(),
-                room.getOwner().getFirstName(),
-                room.getTotalAmount() / (room.getUsers().size() - 1)
+                currentUser.getEmail(),
+                Precision.round((totalAmount / room.getUsers().size()), 2),
+                room.getName()
         );
     }
 

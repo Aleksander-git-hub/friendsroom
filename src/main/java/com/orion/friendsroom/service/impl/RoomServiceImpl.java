@@ -4,6 +4,7 @@ import com.orion.friendsroom.dto.room.AmountDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.dto.user.EmailUserDto;
+import com.orion.friendsroom.dto.user.RepayDebtDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
@@ -205,29 +206,42 @@ public class RoomServiceImpl implements RoomService {
         return existingRoom;
     }
 
-    @Transactional
     @Override
     public RoomEntity addAmountToRoom(AmountDto amountDto, Long roomId) {
-        UserEntity owner = currentUserService.getCurrentUser();
+        UserEntity currentUser = currentUserService.getCurrentUser();
+        EntityValidator.validateCurrentUser(currentUser);
         RoomEntity room = getRoomById(roomId);
 
-        RoomValidator.validateTotalAmount(amountDto);
+        RoomValidator.validateTotalAmount(amountDto.getTotalAmount());
         RoomValidator.validateStatus(room);
         RoomValidator.validateListOfGuests(room);
-        RoomValidator.validateOwner(owner, room);
+        RoomValidator.validateGuest(currentUser, room);
 
-        room.setTotalAmount(amountDto.getTotalAmount());
+        room.setTotalAmount(room.getTotalAmount() + amountDto.getTotalAmount());
 
         List<UserEntity> usersInRoom = room.getUsers();
 
         for (int i = 0; i < usersInRoom.size(); i++) {
             UserEntity guest = usersInRoom.get(i);
 
-            if (room.getOwner().equals(guest)) {
+            if (guest.equals(currentUser)) {
                 continue;
             }
 
-            DebtEntity debt = debtService.createDept(guest, room);
+            DebtEntity debt = debtService.createDept(guest, room,
+                    amountDto.getTotalAmount(), currentUser);
+
+            checkingDebt(guest, room, currentUser, amountDto.getTotalAmount(), debt);
+        }
+
+        return room;
+    }
+
+    @Transactional
+    public void checkingDebt
+            (UserEntity guest, RoomEntity room, UserEntity currentUser,
+             Double totalAmount, DebtEntity debt) {
+        if (debt != null) {
             guest.getDebts().add(debt);
             guest.setTotalAmount(guest.getTotalAmount() + debt.getSum());
             guest.setUpdated(new Date());
@@ -235,45 +249,49 @@ public class RoomServiceImpl implements RoomService {
             room.getDebts().add(debt);
             room.setUpdated(new Date());
             roomRepository.save(room);
-
-            String message = MessageGenerate.getMessageDebtForGuest(guest, room);
-            mailSender.send(guest.getEmail(), "New Debt", message);
         }
 
-        return room;
+        String message = MessageGenerate.getMessageDebtForGuest(
+                guest,
+                room,
+                currentUser,
+                totalAmount
+        );
+        mailSender.send(guest.getEmail(), "New Debt", message);
     }
 
     @Transactional
     @Override
-    public RoomEntity deleteDebtFromGuest(EmailUserDto emailUserDto, Long roomId) {
-        UserEntity owner = currentUserService.getCurrentUser();
+    public RoomEntity repayDebtToUser(RepayDebtDto repayDebtDto, Long roomId) {
+        UserEntity currentUser = currentUserService.getCurrentUser();
+        EntityValidator.validateCurrentUser(currentUser);
+
         RoomEntity room = getRoomById(roomId);
-
-        RoomValidator.validateOwner(owner, room);
-
-        if (StringUtils.isEmpty(emailUserDto.getEmail())) {
-            throw new NotFoundException("Field is empty!");
+        RoomValidator.validateGuest(currentUser, room);
+        if (StringUtils.isEmpty(repayDebtDto.getToWhom())) {
+            throw new NotFoundException("Enter who to repay the Debt.");
         }
+        RoomValidator.validateTotalAmount(repayDebtDto.getAmount());
 
-        UserEntity guest = userRepository.findByEmail(emailUserDto.getEmail());
+        UserEntity ownerOfMoney = userRepository.findByEmail(repayDebtDto.getToWhom());
 
-        if (guest == null ||
-            !room.getUsers().contains(guest)) {
+        if (ownerOfMoney == null ||
+            !room.getUsers().contains(ownerOfMoney)) {
             throw new NotFoundException("User not found with email: " +
-                    emailUserDto.getEmail());
+                    repayDebtDto.getToWhom());
         }
 
-        DebtEntity debt = debtService.deleteDebt(guest, room);
+        DebtEntity debt = debtService.deleteDebt(currentUser, room, repayDebtDto.getAmount(), ownerOfMoney);
 
         room.setUpdated(new Date());
 
-        guest.setTotalAmount(guest.getTotalAmount() - debt.getSum());
-        guest.setUpdated(new Date());
+        currentUser.setTotalAmount(currentUser.getTotalAmount() - debt.getSum());
+        currentUser.setUpdated(new Date());
 
-        String message = MessageGenerate.getMessageDropDebtFromGuest(guest, debt, room);
-        mailSender.send(guest.getEmail(), "Debt Closed", message);
+        String message = MessageGenerate.getMessageDropDebtFromGuest(currentUser, debt, room);
+        mailSender.send(currentUser.getEmail(), "Debt Closed", message);
 
-        userRepository.save(guest);
+        userRepository.save(currentUser);
         roomRepository.save(room);
 
         return room;

@@ -23,4 +23,7 @@ public class DebtEntity extends BaseEntity {
 
     @ManyToOne
     private RoomEntity room;
+
+    @ManyToOne
+    private UserEntity whoOwesMoney;
 }

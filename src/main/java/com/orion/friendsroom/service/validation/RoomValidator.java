@@ -42,13 +42,19 @@ public class RoomValidator {
         });
     }
 
-    public static void validateTotalAmount(AmountDto amountDto) {
-        if (amountDto.getTotalAmount() == null) {
-            throw new NotFoundException("Enter total amount!");
+    public static void validateTotalAmount(Double amount) {
+        if (amount == null) {
+            throw new NotFoundException("Enter amount!");
         }
 
-        if (amountDto.getTotalAmount() <= 0) {
+        if (amount <= 0) {
             throw new NotFoundException("The Amount is incorrect!");
+        }
+    }
+
+    public static void validateGuest(UserEntity guest, RoomEntity room) {
+        if (!room.getUsers().contains(guest)) {
+            throw new ForbiddenError("Access Denied!");
         }
     }
 }

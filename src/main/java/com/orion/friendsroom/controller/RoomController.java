@@ -5,6 +5,7 @@ import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.dto.room.RoomDto;
 import com.orion.friendsroom.dto.room.RoomNameDto;
 import com.orion.friendsroom.dto.user.EmailUserDto;
+import com.orion.friendsroom.dto.user.RepayDebtDto;
 import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
@@ -81,9 +82,9 @@ public class RoomController {
     }
 
     @DeleteMapping(value = "/delete-debt/{roomId}")
-    public RoomDto deleteDebtFromGuest(@RequestBody EmailUserDto emailUserDto,
-                                      @PathVariable Long roomId) {
-        return roomMapper.toDto(roomService.deleteDebtFromGuest(emailUserDto, roomId));
+    public RoomDto repayDebtToUser(@RequestBody RepayDebtDto repayDebtDto,
+                                   @PathVariable Long roomId) {
+        return roomMapper.toDto(roomService.repayDebtToUser(repayDebtDto, roomId));
     }
 
     @DeleteMapping(value = "/delete-room/{roomId}")

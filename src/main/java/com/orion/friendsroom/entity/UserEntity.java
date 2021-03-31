@@ -48,4 +48,7 @@ public class UserEntity extends BaseEntity {
         joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
         inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<RoleEntity> roles;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "whoOwesMoney")
+    private List<DebtEntity> myDebtors;
 }
