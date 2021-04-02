@@ -1,6 +1,7 @@
 package com.orion.friendsroom.service;
 
 import com.orion.friendsroom.entity.*;
+import com.orion.friendsroom.entity.enums.Status;
 import org.apache.commons.math3.util.Precision;
 
 import java.util.Date;

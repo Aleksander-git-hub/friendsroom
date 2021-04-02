@@ -1,9 +1,8 @@
 package com.orion.friendsroom.service.validation;
 
-import com.orion.friendsroom.dto.room.AmountDto;
 import com.orion.friendsroom.dto.room.RoomCreationDto;
 import com.orion.friendsroom.entity.RoomEntity;
-import com.orion.friendsroom.entity.Status;
+import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;

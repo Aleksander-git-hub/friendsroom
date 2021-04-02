@@ -1,4 +1,4 @@
-package com.orion.friendsroom.entity;
+package com.orion.friendsroom.entity.enums;
 
 public enum Status {
     ACTIVE,

@@ -1,7 +1,7 @@
 package com.orion.friendsroom.security;
 
 import com.orion.friendsroom.entity.RoleEntity;
-import com.orion.friendsroom.entity.Status;
+import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

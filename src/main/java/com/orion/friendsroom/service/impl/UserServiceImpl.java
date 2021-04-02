@@ -8,7 +8,7 @@ import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserUpdateDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
-import com.orion.friendsroom.entity.Status;
+import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;

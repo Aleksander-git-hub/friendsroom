@@ -1,17 +1,26 @@
 package com.orion.friendsroom.entity;
 
+import com.orion.friendsroom.entity.enums.Status;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode
+@Builder(toBuilder = true)
 @Entity
 @Table(name = "rooms")
-public class RoomEntity extends BaseEntity{
+public class RoomEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column
     private String name;
@@ -30,4 +39,16 @@ public class RoomEntity extends BaseEntity{
 
     @ManyToMany(mappedBy = "rooms", fetch = FetchType.LAZY)
     private List<UserEntity> users;
+
+    @Column
+    @CreatedDate
+    private Date created;
+
+    @Column
+    @LastModifiedDate
+    private Date updated;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

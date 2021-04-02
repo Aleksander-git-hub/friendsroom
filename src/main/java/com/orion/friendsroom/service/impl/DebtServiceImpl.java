@@ -3,7 +3,7 @@ package com.orion.friendsroom.service.impl;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
-import com.orion.friendsroom.entity.Status;
+import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.repository.DebtRepository;
