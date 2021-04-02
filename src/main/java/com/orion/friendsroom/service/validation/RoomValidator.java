@@ -16,7 +16,7 @@ public class RoomValidator {
     }
 
     public static void validateStatus(RoomEntity existingRoom) {
-        if (!existingRoom.getStatus().equals(Status.ACTIVE)) {
+        if (existingRoom.getStatus() != Status.ACTIVE) {
             throw new NotFoundException("This Room is not active!");
         }
     }
@@ -35,7 +35,7 @@ public class RoomValidator {
 
     public static void validateRoomBeforeDeleting(RoomEntity room) {
         room.getDebts().forEach(debt -> {
-            if (debt.getStatus().equals(Status.ACTIVE)) {
+            if (debt.getStatus() == Status.ACTIVE) {
                 throw new NotFoundException("There is an ACTIVE debt! Deletion is not possible!");
             }
         });

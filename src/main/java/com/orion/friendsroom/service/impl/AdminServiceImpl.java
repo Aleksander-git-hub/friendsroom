@@ -119,16 +119,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<UserEntity> getAllBannedUsers() {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getStatus().equals(Status.BANNED))
-                .collect(Collectors.toList());
+        return userRepository.findAllByStatus(Status.BANNED);
     }
 
     @Override
     public List<UserEntity> getAllActiveUsers() {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getStatus().equals(Status.ACTIVE))
-                .collect(Collectors.toList());
+        return userRepository.findAllByStatus(Status.ACTIVE);
     }
 
     @Transactional
@@ -149,7 +145,7 @@ public class AdminServiceImpl implements AdminService {
     public void deleteUserById(Long userId) {
         UserEntity existingUser = getUserById(userId);
 
-        if (existingUser.getStatus().equals(Status.DELETED)) {
+        if (existingUser.getStatus() == Status.DELETED) {
             throw new NotFoundException("User is already deleted for id: " + userId);
         }
 
@@ -163,7 +159,7 @@ public class AdminServiceImpl implements AdminService {
     public void deleteUserByEmail(EmailUserDto email) {
         UserEntity existingUser = getUserByEmail(email);
 
-        if (existingUser.getStatus().equals(Status.DELETED)) {
+        if (existingUser.getStatus() == Status.DELETED) {
             throw new NotFoundException("User is already deleted for email: " + email);
         }
 
@@ -192,16 +188,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public List<RoomEntity> getAllBannedRooms() {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getStatus().equals(Status.BANNED))
-                .collect(Collectors.toList());
+        return roomRepository.findAllByStatus(Status.BANNED);
     }
 
     @Override
     public List<RoomEntity> getAllActiveRooms() {
-        return roomRepository.findAll().stream()
-                .filter(room -> room.getStatus().equals(Status.ACTIVE))
-                .collect(Collectors.toList());
+        return roomRepository.findAllByStatus(Status.ACTIVE);
     }
 
     @Transactional
@@ -228,7 +220,7 @@ public class AdminServiceImpl implements AdminService {
     public void deleteRoomById(Long roomId) {
         RoomEntity existingRoom = getRoomById(roomId);
 
-        if (existingRoom.getStatus().equals(Status.DELETED)) {
+        if (existingRoom.getStatus() == Status.DELETED) {
             throw new NotFoundException("Room is deleted already for id: " + roomId);
         }
 
@@ -248,7 +240,7 @@ public class AdminServiceImpl implements AdminService {
             throw new NotFoundException("Room not found by name: " + roomNameDto.getName());
         }
 
-        if (existingRoom.getStatus().equals(Status.DELETED)) {
+        if (existingRoom.getStatus() == Status.DELETED) {
             throw new NotFoundException("Room is deleted already for name: " + roomNameDto.getName());
         }
 

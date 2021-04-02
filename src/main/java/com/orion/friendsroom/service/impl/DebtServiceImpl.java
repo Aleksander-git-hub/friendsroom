@@ -45,7 +45,7 @@ public class DebtServiceImpl implements DebtService {
         DebtEntity debt = debtRepository
                 .findByRoomAndUserAndWhoOwesMoneyAndStatus(room, guest, ownerOfMoney, Status.ACTIVE);
 
-        if (debt == null || debt.getStatus().equals(Status.DELETED)) {
+        if (debt == null || debt.getStatus() == Status.DELETED) {
             debt = new DebtEntity();
             debt.setCreated(new Date());
             debt.setUpdated(debt.getCreated());
@@ -84,11 +84,11 @@ public class DebtServiceImpl implements DebtService {
             throw new NotFoundException("Debt not found!");
         }
 
-        if (debt.getStatus().equals(Status.DELETED)) {
+        if (debt.getStatus() == Status.DELETED) {
             throw new NotFoundException("The Debt closed!");
         }
 
-        int result = deductionOfDebt(debt, amount);
+        Integer result = deductionOfDebt(debt, amount);
 
         if (result == -1) {
             Double reverseAmount = Precision.round(
@@ -105,7 +105,7 @@ public class DebtServiceImpl implements DebtService {
         return debt;
     }
 
-    private int deductionOfDebt(DebtEntity debt, Double amount) {
+    private Integer deductionOfDebt(DebtEntity debt, Double amount) {
         Double totalDebt = Precision.round(
                 (debt.getSum()), 2
         );

@@ -2,6 +2,7 @@ package com.orion.friendsroom.repository;
 
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.entity.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,6 @@ public interface RoomRepository extends JpaRepository<RoomEntity, Long> {
     List<RoomEntity> findByOwner(UserEntity owner);
 
     RoomEntity findByActivationCode(String code);
+
+    List<RoomEntity> findAllByStatus(Status status);
 }

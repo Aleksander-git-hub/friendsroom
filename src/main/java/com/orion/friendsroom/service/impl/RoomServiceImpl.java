@@ -100,9 +100,7 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public List<RoomEntity> getAllRooms() {
-        return roomRepository.findAll().stream()
-                .filter(roomEntity -> roomEntity.getStatus().equals(Status.ACTIVE))
-                .collect(Collectors.toList());
+        return roomRepository.findAllByStatus(Status.ACTIVE);
     }
 
     @Override
@@ -313,7 +311,7 @@ public class RoomServiceImpl implements RoomService {
         String messageForDebtors;
         String messageForOwner;
 
-        if (debt.getStatus().equals(Status.DELETED)) {
+        if (debt.getStatus() == Status.DELETED) {
             messageForDebtors = MessageGenerate.getMessageDropDebtFromGuest(currentUser, debt, room);
             messageForOwner = MessageGenerate.getMessageForDropDebtToOwner(currentUser, debt, room);
             mailSender.send(currentUser.getEmail(), "Repay Debt", messageForDebtors);
@@ -340,7 +338,7 @@ public class RoomServiceImpl implements RoomService {
             throw new ForbiddenError("Access denied!");
         }
 
-        if (existingRoom.getStatus().equals(Status.DELETED)) {
+        if (existingRoom.getStatus() == Status.DELETED) {
             throw new NotFoundException("This room is already deleted.");
         }
 

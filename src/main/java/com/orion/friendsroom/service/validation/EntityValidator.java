@@ -28,12 +28,12 @@ public class EntityValidator {
 
     public static void validateStatus(UserEntity userEntity) {
 
-        if (userEntity.getStatus().equals(Status.DELETED) ||
-                userEntity.getStatus().equals(Status.NOT_CONFIRMED)) {
+        if (userEntity.getStatus() == Status.DELETED ||
+                userEntity.getStatus() == Status.NOT_CONFIRMED) {
             throw new NotFoundException("Reject status");
         }
 
-        if (userEntity.getStatus().equals(Status.BANNED)) {
+        if (userEntity.getStatus() == Status.BANNED) {
             throw new NotFoundException("User is banned");
         }
     }
@@ -98,7 +98,7 @@ public class EntityValidator {
             throw new NotFoundException("Can not resolve new status");
         }
 
-        if (status.getStatus().equals(Status.DELETED)) {
+        if (status.getStatus() == Status.DELETED) {
             throw new NotFoundException("Can not execute here!");
         }
 
