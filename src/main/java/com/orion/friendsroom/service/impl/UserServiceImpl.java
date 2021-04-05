@@ -8,8 +8,8 @@ import com.orion.friendsroom.dto.user.PasswordDto;
 import com.orion.friendsroom.dto.user.UserUpdateDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.RoleEntity;
-import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.mapper.UserMapper;
@@ -72,15 +72,22 @@ public class UserServiceImpl implements UserService {
             existingUser.getRoles().add(roleUser);
         }
 
-
         List<RoleEntity> userRoles = new ArrayList<>();
 
-        registerDto.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        UserEntity userEntity = userMapper.toEntity(registerDto);
-
-        MessageGenerate.setFields(userEntity, userRoles, roleUser);
-        userEntity.setDebts(new ArrayList<>());
-        userEntity.setTotalAmount(0D);
+        UserEntity userEntity = UserEntity.builder()
+                .email(registerDto.getEmail())
+                .firstName(registerDto.getFirstName())
+                .secondName(registerDto.getSecondName())
+                .roles(userRoles)
+                .created(new Date())
+                .updated(new Date())
+                .status(Status.NOT_CONFIRMED)
+                .activationCode(MessageGenerate.generateCode())
+                .debts(new ArrayList<>())
+                .totalAmount(0D)
+                .password(passwordEncoder.encode(registerDto.getPassword()))
+                .build();
+        userEntity.getRoles().add(roleUser);
         userRepository.save(userEntity);
 
         String message = MessageGenerate.getMessageForUser(userEntity);

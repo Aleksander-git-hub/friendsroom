@@ -75,8 +75,19 @@ public class AdminServiceImpl implements AdminService {
 
         List<RoleEntity> adminRoles = new ArrayList<>();
 
-        adminRegisterDto.setPassword(passwordEncoder.encode(adminRegisterDto.getPassword()));
-        UserEntity newAdmin = userMapper.toEntity(adminRegisterDto);
+        UserEntity newAdmin = UserEntity.builder()
+                .email(adminRegisterDto.getEmail())
+                .firstName(adminRegisterDto.getFirstName())
+                .secondName(adminRegisterDto.getSecondName())
+                .roles(adminRoles)
+                .created(new Date())
+                .updated(new Date())
+                .status(Status.NOT_CONFIRMED)
+                .activationCode(MessageGenerate.generateCode())
+                .password(passwordEncoder.encode(adminRegisterDto.getPassword()))
+                .debts(new ArrayList<>())
+                .totalAmount(0D)
+                .build();
 
         MessageGenerate.setFields(newAdmin, adminRoles, roleAdmin);
         String message = MessageGenerate.getMessageForAdmin(newAdmin);

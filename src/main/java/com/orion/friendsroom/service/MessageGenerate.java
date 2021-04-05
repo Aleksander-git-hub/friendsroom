@@ -77,7 +77,7 @@ public class MessageGenerate {
         );
     }
 
-    private static String generateCode() {
+    public static String generateCode() {
         return UUID.randomUUID().toString();
     }
 

@@ -66,16 +66,18 @@ public class RoomServiceImpl implements RoomService {
             throw new NotFoundException("The Room with name already exist!");
         }
 
-        RoomEntity creationRoom = roomMapper.toEntity(roomCreationDto);
-        creationRoom.setTotalAmount(0D);
-        creationRoom.setCreated(new Date());
-        creationRoom.setUpdated(creationRoom.getCreated());
-        creationRoom.setStatus(Status.NOT_CONFIRMED);
-        creationRoom.setOwner(currentUser);
-        creationRoom.setActivationCode(UUID.randomUUID().toString());
-        creationRoom.setUsers(new ArrayList<>());
+        RoomEntity creationRoom = RoomEntity.builder()
+                .name(roomCreationDto.getName())
+                .totalAmount(0D)
+                .created(new Date())
+                .updated(new Date())
+                .status(Status.NOT_CONFIRMED)
+                .owner(currentUser)
+                .activationCode(UUID.randomUUID().toString())
+                .users(new ArrayList<>())
+                .debts(new ArrayList<>())
+                .build();
         creationRoom.getUsers().add(currentUser);
-        creationRoom.setDebts(new ArrayList<>());
         roomRepository.save(creationRoom);
 
         currentUser.getUserRooms().add(creationRoom);

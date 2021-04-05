@@ -1,6 +1,5 @@
 package com.orion.friendsroom.mapper;
 
-import com.orion.friendsroom.dto.RegisterDto;
 import com.orion.friendsroom.dto.user.UserDto;
 import com.orion.friendsroom.dto.user.UserUpdateDto;
 import com.orion.friendsroom.entity.UserEntity;
@@ -10,8 +9,6 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-
-    UserEntity toEntity(RegisterDto registerDto);
 
     UserDto toDto(UserEntity userEntity);
 
