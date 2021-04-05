@@ -15,6 +15,7 @@
     <description>App for friends who owe each other</description>
     <properties>
         <java.version>11</java.version>
+        <start-class>com.orion.friendsroom.FriendsRoomApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -96,6 +97,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <mainClass>${start-class}</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
