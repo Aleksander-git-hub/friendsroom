@@ -46,14 +46,15 @@ public class DebtServiceImpl implements DebtService {
                 .findByRoomAndUserAndWhoOwesMoneyAndStatus(room, guest, ownerOfMoney, Status.ACTIVE);
 
         if (debt == null || debt.getStatus() == Status.DELETED) {
-            debt = new DebtEntity();
-            debt.setCreated(new Date());
-            debt.setUpdated(debt.getCreated());
-            debt.setStatus(Status.ACTIVE);
-            debt.setUser(guest);
-            debt.setRoom(room);
-            debt.setWhoOwesMoney(ownerOfMoney);
-            debt.setSum(Precision.round((debtCalculation(room, amount, isFromRepayDebt)), 2));
+            debt = DebtEntity.builder()
+                    .created(new Date())
+                    .updated(new Date())
+                    .status(Status.ACTIVE)
+                    .user(guest)
+                    .room(room)
+                    .whoOwesMoney(ownerOfMoney)
+                    .sum(Precision.round((debtCalculation(room, amount, isFromRepayDebt)), 2))
+                    .build();
             debtRepository.save(debt);
             return debt;
         }
