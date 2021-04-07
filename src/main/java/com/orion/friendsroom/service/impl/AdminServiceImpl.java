@@ -89,7 +89,6 @@ public class AdminServiceImpl implements AdminService {
                 .totalAmount(0D)
                 .build();
 
-        MessageGenerate.setFields(newAdmin, adminRoles, roleAdmin);
         String message = MessageGenerate.getMessageForAdmin(newAdmin);
         mailSender.send(adminRegisterDto.getEmail(), "Activation code", message);
 

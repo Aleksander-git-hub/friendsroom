@@ -1,30 +1,36 @@
 package com.orion.friendsroom.service;
 
-import com.orion.friendsroom.entity.*;
+import com.orion.friendsroom.entity.DebtEntity;
+import com.orion.friendsroom.entity.RoleEntity;
+import com.orion.friendsroom.entity.RoomEntity;
+import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.entity.enums.Status;
+import lombok.Getter;
 import org.apache.commons.math3.util.Precision;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Component
 public class MessageGenerate {
 
-    public static void setFields(UserEntity entity, List<RoleEntity> roles, RoleEntity role) {
-        roles.add(role);
-        entity.setCreated(new Date());
-        entity.setUpdated(entity.getCreated());
-        entity.setRoles(roles);
-        entity.setStatus(Status.NOT_CONFIRMED);
-        entity.setActivationCode(generateCode());
+    private static String hostname;
+
+    @Value("${hostname}")
+    public void setHostname(String hostname) {
+        MessageGenerate.hostname = hostname;
     }
 
     public static String getMessageForUser(UserEntity user) {
         return String.format(
                 "Hello, %s!\n" +
                         "Welcome to FriendsRoom! Please, visit next link:\n " +
-                        "http://localhost:8070/friends-room/api/v1/activate/%s",
+                        "http://%s/friends-room/api/v1/activate/%s",
                 user.getFirstName(),
+                hostname,
                 user.getActivationCode()
         );
     }
@@ -33,8 +39,9 @@ public class MessageGenerate {
         return String.format(
                 "Hello, %s!\n" +
                         "Welcome to our FriendsRoom team! You are an admin! Please, visit next link: " +
-                        "http://localhost:8070/friends-room/api/v1/activate/%s",
+                        "http://%s/friends-room/api/v1/activate/%s",
                 newAdmin.getFirstName(),
+                hostname,
                 newAdmin.getActivationCode()
         );
     }
@@ -43,8 +50,9 @@ public class MessageGenerate {
         return String.format(
                 "Hello, %s!\n" +
                         "Please, visit next link to confirm your update: " +
-                        "http://localhost:8070/friends-room/api/v1/activate/%s",
+                        "http://%s/friends-room/api/v1/activate/%s",
                 updatingUser.getFirstName(),
+                hostname,
                 updatingUser.getActivationCode()
         );
     }
@@ -55,11 +63,12 @@ public class MessageGenerate {
                         "Your Room was created! with id: %s.\n" +
                         "Room's total amount: %s.\n" +
                         "Please, visit next link to confirm create room: %s\n " +
-                        "http://localhost:8070/friends-room/api/v1/activate/room/%s",
+                        "http://%s/friends-room/api/v1/activate/room/%s",
                 room.getOwner().getFirstName(),
                 room.getId(),
                 room.getTotalAmount(),
                 room.getName(),
+                hostname,
                 room.getActivationCode()
         );
     }
@@ -70,9 +79,10 @@ public class MessageGenerate {
         return String.format(
                 "Hello, %s!\n" +
                         "Please, visit next link for confirm updating Room: %s:\n " +
-                        "http://localhost:8070/friends-room/api/v1/activate/room/%s",
+                        "http://%s/friends-room/api/v1/activate/room/%s",
                 updatingRoom.getOwner().getFirstName(),
                 updatingRoom.getName(),
+                hostname,
                 updatingRoom.getActivationCode()
         );
     }
