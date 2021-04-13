@@ -8,8 +8,8 @@ import com.orion.friendsroom.dto.user.RepayDebtDto;
 import com.orion.friendsroom.email.MailSender;
 import com.orion.friendsroom.entity.DebtEntity;
 import com.orion.friendsroom.entity.RoomEntity;
-import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.entity.UserEntity;
+import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.exceptions.ForbiddenError;
 import com.orion.friendsroom.exceptions.NotFoundException;
 import com.orion.friendsroom.mapper.RoomMapper;
@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomServiceImpl implements RoomService {

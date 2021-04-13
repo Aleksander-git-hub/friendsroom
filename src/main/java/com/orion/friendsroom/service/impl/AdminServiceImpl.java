@@ -11,7 +11,6 @@ import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.entity.enums.Status;
 import com.orion.friendsroom.exceptions.NotFoundException;
-import com.orion.friendsroom.mapper.UserMapper;
 import com.orion.friendsroom.repository.RoleRepository;
 import com.orion.friendsroom.repository.RoomRepository;
 import com.orion.friendsroom.repository.UserRepository;
@@ -27,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -43,9 +41,6 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private MailSender mailSender;

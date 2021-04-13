@@ -1,17 +1,13 @@
 package com.orion.friendsroom.service;
 
 import com.orion.friendsroom.entity.DebtEntity;
-import com.orion.friendsroom.entity.RoleEntity;
 import com.orion.friendsroom.entity.RoomEntity;
 import com.orion.friendsroom.entity.UserEntity;
 import com.orion.friendsroom.entity.enums.Status;
-import lombok.Getter;
 import org.apache.commons.math3.util.Precision;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Component
